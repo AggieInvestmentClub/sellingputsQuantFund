@@ -47,6 +47,7 @@ Items marked [PROPOSED] are starting values still open for debate.
         <= -5%, <= -10%, <= -15%
   - No volume requirement on the shock day
   - Skip if SPY falls more than 2% that day (market-wide selloff) [PROPOSED]
+  - Code: strategy_logic.py -> estimate_beta, abnormal_return, is_shock
 
 2.2 Earnings exclusion
   - No earnings release within +/- 3 trading days of the shock
