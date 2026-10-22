@@ -219,9 +219,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# LSEG credentials (never commit)
 lseg-data.config.json
-
-# Project data (large, regenerable, and may be licensed)
 data/
 *.parquet

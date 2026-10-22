@@ -1,0 +1,4 @@
+lseg-data
+pandas
+pyarrow
+pyyaml
