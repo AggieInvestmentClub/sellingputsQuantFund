@@ -1,0 +1,9 @@
+{
+  "logs": { "level": "info" },
+  "sessions": {
+    "default": "desktop.workspace",
+    "desktop": {
+      "workspace": { "app-key": "f218283c9a924bbe9fc953627d8e3d1d69216aac" }
+    }
+  }
+}
