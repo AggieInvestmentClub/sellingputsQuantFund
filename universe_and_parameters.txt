@@ -1,0 +1,229 @@
+UNIVERSE & INITIAL TEST PARAMETERS
+Strategy: Bull put spreads after negative overreactions to non-earnings news
+Status: v1 draft (starting values to backtest and revise, not final rules)
+Source: "putSpread on negative overrreaction.pdf" + README + team review.
+Items marked [PROPOSED] are starting values still open for debate.
+
+======================================================================
+1. TRADABLE UNIVERSE
+======================================================================
+
+1.1 Base list
+  - US-listed common stocks with listed options (weeklies preferred)
+  - Pool: S&P 500 constituents only, built POINT-IN-TIME
+    (use membership as of each event date to avoid survivorship bias)
+  - Hard market cap floor: $5B (1.3). Higher floors are tested in section 4.
+
+1.2 Exclusions
+  - ETFs, ETNs, leveraged products
+  - Stocks with pending M&A / takeover deals (price pinned, binary risk)
+  - Binary-event names where the "news" IS the fundamental (e.g. single-drug
+    biotech FDA decisions, going-concern warnings, fraud findings)
+  - Earnings date inside the trade window (entry date -> expiry)
+  - Stocks under $20
+
+1.3 Stock liquidity filters
+  - Market cap               >= $5B
+  - 20-day avg $ volume      >= $50M/day
+  - 20-day avg share volume  >= 1M shares/day
+
+1.4 Options liquidity filters
+  - Open interest at short strike   >= 500 contracts
+  - Open interest at long strike    >= 250 contracts
+  - Avg daily options volume (name) >= 5,000 contracts
+  - Short-leg bid-ask width         <= 10% of mid  (or <= $0.15, whichever is larger)
+  - Expiry with 14-35 DTE must be listed
+
+======================================================================
+2. SIGNAL / EVENT DEFINITION (what counts as a "shock")
+======================================================================
+
+2.1 Price trigger
+  - Beta-adjusted abnormal 1-day return (market-model residual):
+        abnormal = stock return - beta * SPY return
+        beta estimated over the prior 250 trading days, ending 5 days
+        before the shock
+  - Thresholds to test (cumulative):
+        <= -5%, <= -10%, <= -15%
+  - No volume requirement on the shock day
+  - Skip if SPY falls more than 2% that day (market-wide selloff) [PROPOSED]
+
+2.2 Earnings exclusion
+  - No earnings release within +/- 3 trading days of the shock
+  - No earnings release between entry and expiry
+
+2.3 News categories to tag
+  - Analyst downgrade
+  - Peer / sector negative news (contagion)
+  - Lawsuit filed
+  - Regulatory probe
+  - Short seller report
+  - Product recall
+  - Dilution / secondary offering
+  - TBD (more categories to be added as we review the event set)
+  - Other / unclassified (logged, not traded at first)
+
+2.4 LLM filter ("is the reaction justified?")
+  - Core test: estimated fundamental impact vs actual market cap lost
+        market cap lost  = abnormal return * pre-shock market cap
+        est. impact      = LLM's estimated $ hit to company value from the
+                           news (e.g. lawsuit size, recall cost, dilution
+                           amount, lost revenue * multiple)
+        overreaction ratio = market cap lost / est. impact
+    Example: company sued for $10M, small likely settlement, stock -10% on
+    a $20B company ($2B lost) -> ratio = 200x -> overshot -> tradeable
+  - Trade when overreaction ratio >= threshold (test: 2x, 3x, 5x)
+  - LLM output: category, est. $ impact (low / mid / high), ratio,
+    "justified / not justified / unsure", short reason
+  - Trade only "not justified"
+  - Backtesting: anonymize company name/ticker and dates in prompts; run a
+    recognition test to check the model can't identify the company
+    (look-ahead bias)
+
+======================================================================
+3. TRADE STRUCTURE (BASELINE)
+======================================================================
+
+3.1 Structure
+  - Bull put spread only (sell higher-strike put, buy lower-strike put)
+
+3.2 Short strike
+  - Delta: 0.15, 0.20 (default), 0.25
+  - Must also be below the post-announcement low
+
+3.3 Long strike / spread width
+  - Method A, by width: 2.5%, 5% (default), 7.5%, 10% of stock price,
+    rounded to the nearest listed strike
+  - Method B, by delta: long put at 0.05 or 0.10 delta
+  - Test both methods
+
+3.4 Minimum credit
+  - Credit >= 25% of spread width (adjustable: 15%, 20%, 25%, 33%)
+
+3.5 Entry (IV lag / selling-exhaustion trigger)
+  - Theory: after the shock, selling cools and realized vol drops faster
+    than implied vol. Sell premium while IV is still rich relative to
+    what the stock is actually doing.
+  - Earliest entry: 1 trading day after the shock
+  - Enter on the first day all of these hold:
+      a) IV / RV ratio >= threshold
+           IV = 30-day ATM implied vol
+           RV = realized vol over the days since the shock, excluding the
+                shock day (min 1 day; switch to 3-day RV once available)
+           threshold: 1.2, 1.5 (default), 2.0
+      b) Selling has cooled: day volume <= 1.5x 20-day avg
+         (test: 1.5x, 2x, off)
+      c) No new post-announcement low that day
+  - Max wait: 10 trading days after the shock, then skip the event
+
+3.6 Profit target (dynamic, floor 50%)
+  - Never take profit below 50% of max credit
+  - Once >= 50% captured, close if profit is outpacing time decay:
+        % of credit captured - % of DTE elapsed >= 20 points (test 10/20/30)
+    e.g. 60% captured after 25% of the time -> close (stock bounced hard)
+  - Otherwise keep holding until 75% captured or expiry week
+  - Compare against fixed 50% / 75% targets and hold-to-expiry
+
+3.7 Stop loss (ideas to test)
+  - Credit multiple: close at 1.5x, 2x (default), 3x credit received
+  - % of max loss: close at 50% / 75% of max spread loss
+  - Price-based: underlying closes below the short strike
+  - Price-based: underlying closes below the post-announcement low
+  - Delta-based: short put delta rises above 0.50
+  - News-based: new negative news on the same ticker -> LLM re-runs 2.4;
+    close if the reaction now looks justified
+  - None (hold to expiry, spread already caps loss)
+  - No time stop
+
+3.8 Max loss per trade
+  - Adjustable: 1%, 2% (default), 3% of allocated capital
+
+======================================================================
+4. PARAMETER GRID TO TEST
+======================================================================
+Default value marked with *
+
+  Parameter               Values to test
+  ----------------------  -------------------------------------------------
+  Shock threshold         <= -5%*, <= -10%, <= -15% (beta-adjusted)
+  Overreaction ratio      2x, 3x*, 5x
+  Short strike delta      0.15, 0.20*, 0.25 (always below post-news low)
+  Long strike method      width*, delta
+  Spread width            2.5%, 5%*, 7.5%, 10% of price
+  Long strike delta       0.05, 0.10
+  Min credit / width      15%, 20%, 25%*, 33%
+  DTE at entry            14, 21*, 28, 35
+  Entry IV / RV ratio     1.2, 1.5*, 2.0
+  Entry volume cooldown   1.5x*, 2x, off
+  Max wait for entry      5, 10*, 15 days
+  Profit floor            50%* (fixed)
+  Outpace margin          10, 20*, 30 points ahead of time elapsed
+  Profit target compare   dynamic*, fixed 50%, fixed 75%, hold to expiry
+  Stop loss               none, 1.5x, 2x*, 3x credit,
+                          50% / 75% of max loss,
+                          close below short strike,
+                          close below post-news low,
+                          short delta > 0.50,
+                          LLM re-check on new news
+  Max loss per trade      1%, 2%*, 3% of capital
+
+Filters to test (on / off and thresholds)
+  - Market cap floor                $5B*, $20B, $50B, $100B
+  - IV rank at entry                >= 30, >= 50*, >= 70
+  - Stock above 200-day MA          on / off*
+  - RSI(14) at entry                < 30, < 40, off*
+  - VIX at entry                    < 25, < 35, off*
+  - News category toggles           each category on / off individually,
+                                    each traded alone vs all together
+
+======================================================================
+5. PORTFOLIO-LEVEL RISK
+======================================================================
+  - Exposure-review agent runs daily (and before each new entry):
+      * Sum of max loss by GICS sector and industry
+      * Beta-weighted delta by sector
+      * Pairwise correlation of open positions (60-day returns)
+      * Flags overexposure and recommends: skip next same-sector entry,
+        size down, or prefer other-sector setups
+  - Hard backstop in case the agent fails or lags [PROPOSED]:
+      * Max 30% of total capital-at-risk in one sector
+      * One position per ticker at a time
+  - No portfolio drawdown rule
+  - Assignment: if short leg goes ITM near expiry, close the spread rather
+    than take shares (no stock holding in v0)
+
+======================================================================
+6. BACKTEST ASSUMPTIONS
+======================================================================
+  TBD once LSEG data access is set up. To decide:
+  - Backtest period and in-sample / out-of-sample split
+  - Fill model (mid vs mid +/- part of spread vs natural)
+  - Commissions and fees
+  - End-of-day vs intraday chains
+  - Point-in-time timestamps for all data (no look-ahead)
+
+======================================================================
+7. TESTING ORDER
+======================================================================
+  1. Build the event set: thousands of non-earnings shocks across the
+     S&P 500, each tagged with a category. Measure beta-adjusted returns
+     at +1 / +5 / +10 / +20 days per category to find which categories
+     revert most. If nothing reverts, stop here.
+  2. Set up LSEG data (options chains, IV history, news timestamps).
+  3. Measure IV vs realized vol after shocks (is IV lagging?).
+  4. Run the baseline spread (section 3) on the event set.
+  5. Vary one parameter at a time from baseline, then a small grid on the
+     2-3 parameters that matter most.
+  6. Validate the chosen settings once on out-of-sample data.
+  7. Paper trade live (Alpaca paper) before any real capital.
+
+======================================================================
+8. METRICS TO REPORT PER RUN
+======================================================================
+  - Number of trades, win rate, avg win / avg loss
+  - Expectancy per trade ($ and % of max risk)
+  - Total return, CAGR, max drawdown, Sharpe, Sortino
+  - Return by news category and by entry lag
+  - Abnormal returns at +1, +5, +10, +20 days (signal check, no options)
+  - IV change from entry to exit vs realized vol (vol premium check)
+  - Results with and without the LLM filter (does the LLM add value?)
