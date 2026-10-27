@@ -1,7 +1,7 @@
 UNIVERSE & INITIAL TEST PARAMETERS
 Strategy: Bull put spreads after negative overreactions to non-earnings news
 Status: v1 draft (starting values to backtest and revise, not final rules)
-Source: "putSpread on negative overrreaction.pdf" + README + team review.
+Source: strategy_thesis.pdf + README + team review.
 Items marked [PROPOSED] are starting values still open for debate.
 
 ======================================================================

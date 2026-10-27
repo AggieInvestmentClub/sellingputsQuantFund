@@ -17,7 +17,7 @@ ING (download) ──► DAT (clean) ──► EVT (find shocks) ──► STR (
 | ING | `src/ingest/` | [ING_ingest.md](ING_ingest.md) | ✅ built |
 | DAT | `src/data/` | — | ⬜ not started |
 | OPT | `src/options/` | — | ⬜ not started |
-| STR | `strategy_logic.py` | [STR_strategy.md](STR_strategy.md) | ✅ built, except 2.3 / 2.4 |
+| STR | `strategy/strategy_logic.py` | [STR_strategy.md](STR_strategy.md) | ✅ built, except 2.3 / 2.4 |
 | EVT | `src/events/` | — | ⬜ not started |
 | BT | `src/backtest/` | — | ⬜ not started |
 | LIVE | `src/live/` | — | ⬜ not started |
@@ -46,7 +46,7 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | ING-14 | fetch_index_changes | lseg_universe.py | Every S&P 500 join / leave | ✅ |
 | ING-15 | save_changes | lseg_universe.py | Save joins / leaves to parquet | ✅ |
 
-### STR: strategy rules (`strategy_logic.py`)
+### STR: strategy rules (`strategy/strategy_logic.py`)
 
 | ID | Function | Spec | Purpose | Status |
 |---|---|---|---|---|
@@ -79,7 +79,7 @@ Copy this into the right docs file for every new function:
 ```markdown
 ### XXX-nn  function_name
 **File:** path/to/file.py
-**Spec:** universe_and_parameters.txt x.x   (strategy functions only)
+**Spec:** strategy/universe_and_parameters.txt x.x   (strategy functions only)
 **Status:** ✅ done / 🚧 in progress / ⬜ planned
 
 **What it does:** One or two plain-English sentences.

@@ -1,6 +1,6 @@
-# STR: strategy rules (`strategy_logic.py`)
+# STR: strategy rules (`strategy/strategy_logic.py`)
 
-The rules from `universe_and_parameters.txt`, written as small functions. Each takes plain
+The rules from `strategy/universe_and_parameters.txt`, written as small functions. Each takes plain
 inputs (numbers, Series, DataFrames) and returns an answer. None of them download anything,
 so they work the same on backtest data and live data.
 
@@ -15,8 +15,8 @@ so they work the same on backtest data and live data.
 ---
 
 ### STR-1.1a  passes_universe
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 1.1, 1.2, 1.3
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 1.1, 1.2, 1.3
 **Status:** ✅ done
 
 **What it does:** Checks whether a stock can be traded at all: in the S&P 500 on the event
@@ -49,8 +49,8 @@ smaller and would wrongly fail the $20 floor.
 ---
 
 ### STR-1.4a  passes_options_liquidity
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 1.4
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 1.4
 **Status:** ✅ done
 
 **What it does:** Checks open interest at both strikes, the name's daily options volume, and
@@ -75,8 +75,8 @@ that the short put's bid-ask width is at most 10% of mid or $0.15, whichever is 
 ---
 
 ### STR-1.4b  pick_expiry
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 1.4
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 1.4
 **Status:** ✅ done
 
 **What it does:** From the listed expiries, picks the one closest to the target days-to-expiry,
@@ -93,8 +93,8 @@ within the allowed window.
 ---
 
 ### STR-2.1a  estimate_beta
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 2.1
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 2.1
 **Status:** ✅ done (tested on synthetic data)
 
 **What it does:** Measures how much the stock normally moves per 1% move in SPY, using about
@@ -122,8 +122,8 @@ day and later days are never used (no look-ahead).
 ---
 
 ### STR-2.1b  abnormal_return
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 2.1
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 2.1
 **Status:** ✅ done
 
 **What it does:** The part of the day's move that the market doesn't explain:
@@ -140,8 +140,8 @@ stock return − beta × SPY return.
 ---
 
 ### STR-2.1c  is_shock
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 2.1
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 2.1
 **Status:** ✅ done
 
 **What it does:** Decides if a day counts as a shock: the stock-specific drop is big enough
@@ -166,8 +166,8 @@ AND the whole market didn't sell off.
 ---
 
 ### STR-2.2a  earnings_clear
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 2.2
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 2.2
 **Status:** ✅ done
 
 **What it does:** Rejects the event if earnings fall within ±3 trading days of the shock, or
@@ -193,8 +193,8 @@ Split on Mar 28 inside the trade → False.
 ---
 
 ### STR-2.3a  categories
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 2.3
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 2.3
 **Status:** ⬜ planned
 
 **What it does:** The list of news categories (downgrade, lawsuit, recall, ...) and on/off
@@ -203,8 +203,8 @@ toggles so each category can be traded alone or excluded in tests.
 ---
 
 ### STR-2.4a  overreaction_ratio
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 2.4
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 2.4
 **Status:** ⬜ planned
 
 **What it does:** Market cap lost (abnormal return × pre-shock market cap) divided by the
@@ -213,8 +213,8 @@ LLM's estimated $ impact of the news.
 ---
 
 ### STR-2.4b  is_overreaction
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 2.4
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 2.4
 **Status:** ⬜ planned
 
 **What it does:** True when the overreaction ratio is at or above the threshold
@@ -223,8 +223,8 @@ LLM's estimated $ impact of the news.
 ---
 
 ### STR-3.2a  pick_short_strike
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.2
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.2
 **Status:** ✅ done
 
 **What it does:** From one expiry's put chain, picks the put closest to the target delta among
@@ -242,8 +242,8 @@ strikes below the post-announcement low.
 ---
 
 ### STR-3.3a  pick_long_strike
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.3
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.3
 **Status:** ✅ done
 
 **What it does:** Picks the long put below the short strike, either by width (% of stock
@@ -270,8 +270,8 @@ price, snapped to a listed strike) or by delta.
 ---
 
 ### STR-3.4a  spread_credit
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.4
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.4
 **Status:** ✅ done (placeholder fill model)
 
 **What it does:** The credit for selling the spread at mid prices: short mid − long mid.
@@ -289,8 +289,8 @@ price, snapped to a listed strike) or by delta.
 ---
 
 ### STR-3.4b  credit_ok
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.4
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.4
 **Status:** ✅ done
 
 **What it does:** Checks that the credit is at least a minimum share of the spread width.
@@ -306,8 +306,8 @@ price, snapped to a listed strike) or by delta.
 ---
 
 ### STR-3.5a  realized_vol
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.5
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.5
 **Status:** ✅ done
 
 **What it does:** Annualized realized volatility over the days since the shock, not counting
@@ -326,8 +326,8 @@ the shock day itself.
 ---
 
 ### STR-3.5b  entry_ready
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.5
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.5
 **Status:** ✅ done
 
 **What it does:** Decides whether to enter today. Enters when IV is still rich versus realized
@@ -355,8 +355,8 @@ vol, volume has cooled, and the stock didn't make a new low. Skips the event aft
 ---
 
 ### STR-3.6a  should_take_profit
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.6
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.6
 **Status:** ✅ done
 
 **What it does:** Decides whether to close for a profit. Dynamic mode never closes below 50%
@@ -384,8 +384,8 @@ Same profit after 15 of 20 days → False.
 ---
 
 ### STR-3.7a  should_stop
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.7
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.7
 **Status:** ✅ done
 
 **What it does:** Checks the chosen stop-loss rules in order and returns the first that fires.
@@ -418,8 +418,8 @@ spread price of 2× credit. An unknown rule name raises ValueError.
 ---
 
 ### STR-3.8a  position_size
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 3.8
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 3.8
 **Status:** ✅ done
 
 **What it does:** Number of spreads so that the max possible loss stays within the risk budget.
@@ -435,8 +435,8 @@ spread price of 2× credit. An unknown rule name raises ValueError.
 ---
 
 ### STR-5a  sector_exposure
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 5
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 5
 **Status:** ✅ done
 
 **What it does:** Each sector's share of total capital-at-risk (sum of max losses).
@@ -450,8 +450,8 @@ spread price of 2× credit. An unknown rule name raises ValueError.
 ---
 
 ### STR-5b  portfolio_ok
-**File:** strategy_logic.py
-**Spec:** universe_and_parameters.txt 5
+**File:** strategy/strategy_logic.py
+**Spec:** strategy/universe_and_parameters.txt 5
 **Status:** ✅ done
 
 **What it does:** The hard backstop before adding a trade: one position per ticker, and no

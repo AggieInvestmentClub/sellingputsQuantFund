@@ -10,7 +10,7 @@ In VS Code, **Ctrl+Shift+F** searches every file in the repo. Search an ID such 
 
 - the function in the code (its docstring starts with the tag)
 - its entry in `docs/code_reference/` (what it does, inputs, outputs, example)
-- its rule in `universe_and_parameters.txt` (the `Code:` lines), for strategy functions
+- its rule in `strategy/universe_and_parameters.txt` (the `Code:` lines), for strategy functions
 
 Search just the prefix (`STR-2.1`, `ING-`) to see a whole group.
 
@@ -21,12 +21,12 @@ Search just the prefix (`STR-2.1`, `ING-`) to see a whole group.
 | `ING-nn` | `src/ingest/` | downloading from LSEG | `ING-06` fetch_headlines |
 | `DAT-nn` | `src/data/` | cleaning raw data into what the strategy expects | (planned) |
 | `OPT-nn` | `src/options/` | option RICs, Black-Scholes / Greeks | (planned) |
-| `STR-x.xa` | `strategy_logic.py` | the strategy rules | `STR-2.1c` is_shock |
+| `STR-x.xa` | `strategy/strategy_logic.py` | the strategy rules | `STR-2.1c` is_shock |
 | `EVT-nn` | `src/events/` | building the shock event set | (planned) |
 | `BT-nn` | `src/backtest/` | simulating trades, fills, metrics | (planned) |
 | `LIVE-nn` | `src/live/` | paper / live trading | (planned) |
 
-- **STR IDs use the spec section number** from `universe_and_parameters.txt`, plus a letter
+- **STR IDs use the spec section number** from `strategy/universe_and_parameters.txt`, plus a letter
   per function: `STR-2.1a`, `STR-2.1b`, `STR-2.1c` are the three functions for spec 2.1.
 - **All other prefixes count up** in the order functions are written: `ING-01`, `ING-02`, ...
 - IDs are never reused. If a function is deleted, its ID is retired.
@@ -45,7 +45,7 @@ Do all three **in the same commit**:
    `STR_strategy.md`, ...). Copy the template at the bottom of
    `docs/code_reference/README.md`, and add a row to the index table there.
 3. **If it's a strategy rule**, add or update the `Code:` line under its spec section in
-   `universe_and_parameters.txt`.
+   `strategy/universe_and_parameters.txt`.
 
 Planned functions that aren't written yet get a `# TODO [ID] name: ...` comment in the code
 and an entry marked `**Status:** ⬜ planned` in the docs.

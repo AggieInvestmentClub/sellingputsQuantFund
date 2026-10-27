@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CODE_FILES = [ROOT / "strategy_logic.py", *sorted((ROOT / "src").rglob("*.py"))]
+CODE_FILES = sorted([*(ROOT / "strategy").rglob("*.py"), *(ROOT / "src").rglob("*.py")])
 DOCS_DIR = ROOT / "docs" / "code_reference"
 
 ID = r"(?:ING|DAT|OPT|STR|EVT|BT|LIVE)-\d+(?:\.\d+)?[a-z]?"
