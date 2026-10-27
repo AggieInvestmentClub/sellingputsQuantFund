@@ -1,6 +1,11 @@
 # sellingputsQuantFund
 Selling options strategy for quant fund
 
+> **Team: read [CONTRIBUTING.md](CONTRIBUTING.md) after you pull.** Every function has an ID tag
+> (e.g. `STR-2.1c`, `ING-06`). Ctrl+Shift+F an ID in VS Code to see the code, its docs in
+> [docs/code_reference/](docs/code_reference/README.md), and its spec rule together. New or changed
+> functions must be tagged and documented in the same commit.
+
 Essentially the essence of the strategy is capitalizing on overreactions to stock specific news that doesn't change the companies valuation or add certain risk to the company.
 
 Initial proposed pipeline: 

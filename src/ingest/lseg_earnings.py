@@ -6,6 +6,7 @@ RAW = Path("data/raw/earnings")
 
 
 def fetch_earnings_dates(rics, start="2017-01-01", end="2027-01-31", batch=50):
+    """[ING-08] earnings report dates for many RICs (batches of 50), flags after-close reports"""
     frames = []
     for i in range(0, len(rics), batch):
         chunk = list(rics[i:i + batch])
@@ -28,5 +29,6 @@ def fetch_earnings_dates(rics, start="2017-01-01", end="2027-01-31", batch=50):
 
 
 def save_earnings(df):
+    """[ING-09] save earnings dates to data/raw/earnings/earnings_dates.parquet"""
     RAW.mkdir(parents=True, exist_ok=True)
     df.to_parquet(RAW / "earnings_dates.parquet", index=False)

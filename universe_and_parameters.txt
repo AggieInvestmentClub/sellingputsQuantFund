@@ -26,7 +26,7 @@ Items marked [PROPOSED] are starting values still open for debate.
   - Market cap               >= $5B
   - 20-day avg $ volume      >= $50M/day
   - 20-day avg share volume  >= 1M shares/day
-  - Code: strategy_logic.py -> passes_universe (1.1 - 1.3)
+  - Code: strategy_logic.py -> STR-1.1a passes_universe
 
 1.4 Options liquidity filters
   - Open interest at short strike   >= 500 contracts
@@ -34,7 +34,7 @@ Items marked [PROPOSED] are starting values still open for debate.
   - Avg daily options volume (name) >= 5,000 contracts
   - Short-leg bid-ask width         <= 10% of mid  (or <= $0.15, whichever is larger)
   - Expiry with 14-35 DTE must be listed
-  - Code: strategy_logic.py -> passes_options_liquidity, pick_expiry
+  - Code: strategy_logic.py -> STR-1.4a passes_options_liquidity, STR-1.4b pick_expiry
 
 ======================================================================
 2. SIGNAL / EVENT DEFINITION (what counts as a "shock")
@@ -49,13 +49,13 @@ Items marked [PROPOSED] are starting values still open for debate.
         <= -5%, <= -10%, <= -15%
   - No volume requirement on the shock day
   - Skip if SPY falls more than 2% that day (market-wide selloff) [PROPOSED]
-  - Code: strategy_logic.py -> estimate_beta, abnormal_return, is_shock
+  - Code: strategy_logic.py -> STR-2.1a estimate_beta, STR-2.1b abnormal_return, STR-2.1c is_shock
 
 2.2 Earnings exclusion
   - No earnings release within +/- 3 trading days of the shock
   - No earnings release between entry and expiry
   - No stock split or special dividend between entry and expiry
-  - Code: strategy_logic.py -> earnings_clear
+  - Code: strategy_logic.py -> STR-2.2a earnings_clear
 
 2.3 News categories to tag
   - Analyst downgrade
@@ -95,18 +95,18 @@ Items marked [PROPOSED] are starting values still open for debate.
 3.2 Short strike
   - Delta: 0.15, 0.20 (default), 0.25
   - Must also be below the post-announcement low
-  - Code: strategy_logic.py -> pick_short_strike
+  - Code: strategy_logic.py -> STR-3.2a pick_short_strike
 
 3.3 Long strike / spread width
   - Method A, by width: 2.5%, 5% (default), 7.5%, 10% of stock price,
     rounded to the nearest listed strike
   - Method B, by delta: long put at 0.05 or 0.10 delta
   - Test both methods
-  - Code: strategy_logic.py -> pick_long_strike
+  - Code: strategy_logic.py -> STR-3.3a pick_long_strike
 
 3.4 Minimum credit
   - Credit >= 25% of spread width (adjustable: 15%, 20%, 25%, 33%)
-  - Code: strategy_logic.py -> spread_credit, credit_ok
+  - Code: strategy_logic.py -> STR-3.4a spread_credit, STR-3.4b credit_ok
 
 3.5 Entry (IV lag / selling-exhaustion trigger)
   - Theory: after the shock, selling cools and realized vol drops faster
@@ -123,7 +123,7 @@ Items marked [PROPOSED] are starting values still open for debate.
          (test: 1.5x, 2x, off)
       c) No new post-announcement low that day
   - Max wait: 10 trading days after the shock, then skip the event
-  - Code: strategy_logic.py -> realized_vol, entry_ready
+  - Code: strategy_logic.py -> STR-3.5a realized_vol, STR-3.5b entry_ready
 
 3.6 Profit target (dynamic, floor 50%)
   - Never take profit below 50% of max credit
@@ -132,7 +132,7 @@ Items marked [PROPOSED] are starting values still open for debate.
     e.g. 60% captured after 25% of the time -> close (stock bounced hard)
   - Otherwise keep holding until 75% captured or expiry week
   - Compare against fixed 50% / 75% targets and hold-to-expiry
-  - Code: strategy_logic.py -> should_take_profit
+  - Code: strategy_logic.py -> STR-3.6a should_take_profit
 
 3.7 Stop loss (ideas to test)
   - Credit multiple: close at 1.5x, 2x (default), 3x credit received
@@ -144,11 +144,11 @@ Items marked [PROPOSED] are starting values still open for debate.
     close if the reaction now looks justified
   - None (hold to expiry, spread already caps loss)
   - No time stop
-  - Code: strategy_logic.py -> should_stop
+  - Code: strategy_logic.py -> STR-3.7a should_stop
 
 3.8 Max loss per trade
   - Adjustable: 1%, 2% (default), 3% of allocated capital
-  - Code: strategy_logic.py -> position_size
+  - Code: strategy_logic.py -> STR-3.8a position_size
 
 ======================================================================
 4. PARAMETER GRID TO TEST
@@ -201,7 +201,7 @@ Filters to test (on / off and thresholds)
       * Max 30% of total capital-at-risk in one sector
       * One position per ticker at a time
   - No portfolio drawdown rule
-  - Code: strategy_logic.py -> sector_exposure, portfolio_ok
+  - Code: strategy_logic.py -> STR-5a sector_exposure, STR-5b portfolio_ok
   - Assignment: if short leg goes ITM near expiry, close the spread rather
     than take shares (no stock holding in v0)
 

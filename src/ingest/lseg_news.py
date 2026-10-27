@@ -7,6 +7,7 @@ RAW = Path("data/raw/news")
 
 
 def _get_page(query, page, start_iso, end_iso, retries=4):
+    """[ING-04] one page (up to 100) of headlines, retries with backoff on errors"""
     for attempt in range(retries):
         try:
             return ld.news.get_headlines(query, count=page,
@@ -20,6 +21,7 @@ def _get_page(query, page, start_iso, end_iso, retries=4):
 
 
 def _fetch_window(query, start_ts, end_ts, page):
+    """[ING-05] all headlines in one time window, paging backward 100 at a time"""
     frames = []
     cur_end = end_ts
     while True:
@@ -36,6 +38,7 @@ def _fetch_window(query, start_ts, end_ts, page):
 
 def fetch_headlines(ric: str, start: str, end: str, page: int = 100,
                     lang: str = "LEN", window_days: int = 7) -> pd.DataFrame:
+    """[ING-06] all English headlines for one RIC, fetched in 7-day windows, deduped by storyId"""
     query = f"R:{ric} AND Language:{lang}"
     start_ts = pd.Timestamp(start, tz="UTC")
     end_ts = pd.Timestamp(end, tz="UTC")
@@ -57,6 +60,7 @@ def fetch_headlines(ric: str, start: str, end: str, page: int = 100,
 
 
 def save_news(ric: str, df: pd.DataFrame) -> Path:
+    """[ING-07] save headlines to data/raw/news/<RIC>.parquet"""
     RAW.mkdir(parents=True, exist_ok=True)
     path = RAW / f"{ric.replace('.', '_')}.parquet"
     df.to_parquet(path, index=False)

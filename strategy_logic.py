@@ -1,6 +1,8 @@
 """
 Strategy logic. Section numbers match universe_and_parameters.txt,
 so ctrl+F a number (e.g. "2.1") to jump between the spec and the code.
+Every function has an ID like [STR-2.1a]: Ctrl+Shift+F the ID in VS Code to see
+the code, its entry in docs/code_reference/, and the spec line together.
 
 Conventions:
 - returns are decimals (0.012 = 1.2%)
@@ -22,7 +24,7 @@ def passes_universe(in_sp500, price, market_cap, avg_dollar_volume, avg_share_vo
                     min_price=20, min_market_cap=5e9,
                     min_dollar_volume=50e6, min_share_volume=1e6):
     """
-    [1.1] [1.2] [1.3] can we trade this stock at all?
+    [STR-1.1a] can we trade this stock at all? (spec 1.1, 1.2, 1.3)
 
     in_sp500: was it in the S&P 500 ON THE EVENT DATE (point-in-time, not today)
     price, market_cap: as-traded (UNADJUSTED) values on the event date,
@@ -43,7 +45,7 @@ def passes_options_liquidity(short_oi, long_oi, avg_options_volume, short_bid, s
                              min_short_oi=500, min_long_oi=250, min_options_volume=5000,
                              max_spread_pct=0.10, max_spread_abs=0.15):
     """
-    [1.4] are the options liquid enough to trade the spread?
+    [STR-1.4a] are the options liquid enough to trade the spread?
 
     short_oi, long_oi: open interest at the short / long strike
     avg_options_volume: avg daily options volume for the whole name
@@ -64,7 +66,7 @@ def passes_options_liquidity(short_oi, long_oi, avg_options_volume, short_bid, s
 
 def pick_expiry(expiries, entry_date, target_dte=21, min_dte=14, max_dte=35):
     """
-    [1.4] pick the listed expiry closest to target_dte, within min_dte - max_dte
+    [STR-1.4b] pick the listed expiry closest to target_dte, within min_dte - max_dte
 
     expiries: list of listed expiry dates
     returns the chosen expiry (Timestamp) or None if nothing in the window
@@ -87,7 +89,7 @@ def pick_expiry(expiries, entry_date, target_dte=21, min_dte=14, max_dte=35):
 
 def estimate_beta(stock_returns, spy_returns, shock_date, window=250, gap=5, min_obs=200):
     """
-    [2.1] beta for the market-model residual
+    [STR-2.1a] beta for the market-model residual
 
     function is assuming data in two pandas(1 for spy, 1 for stock)
     date     return
@@ -117,7 +119,7 @@ def estimate_beta(stock_returns, spy_returns, shock_date, window=250, gap=5, min
 
 def abnormal_return(stock_ret, spy_ret, beta):
     """
-    [2.1] beta-adjusted abnormal 1-day return
+    [STR-2.1b] beta-adjusted abnormal 1-day return
 
     part of the stock's move the market doesn't explain
     abnormal = stock return - beta * spy return
@@ -131,7 +133,7 @@ def abnormal_return(stock_ret, spy_ret, beta):
 
 def is_shock(abnormal_ret, spy_ret, threshold=-0.05, max_spy_drop=-0.02):
     """
-    [2.1] shock threshold + SPY selloff filter
+    [STR-2.1c] shock threshold + SPY selloff filter
 
     True if the day counts as a shock event
     threshold: abnormal drop must be at least this big (test -0.05, -0.10, -0.15)
@@ -156,7 +158,7 @@ def is_shock(abnormal_ret, spy_ret, threshold=-0.05, max_spy_drop=-0.02):
 def earnings_clear(shock_date, entry_date, expiry, earnings_dates,
                    other_event_dates=(), buffer_days=3):
     """
-    [2.2] no earnings near the shock or inside the trade window
+    [STR-2.2a] no earnings near the shock or inside the trade window
 
     fails if:
     - an earnings date is within +/- buffer_days trading days of the shock
@@ -187,14 +189,14 @@ def earnings_clear(shock_date, entry_date, expiry, earnings_dates,
 # ======================================================================
 # 2.3 News categories
 # ======================================================================
-# TODO category list + on/off toggles per category
+# TODO [STR-2.3a] categories: category list + on/off toggles per category
 
 
 # ======================================================================
 # 2.4 LLM filter
 # ======================================================================
-# TODO overreaction_ratio: market cap lost / LLM estimated $ impact
-# TODO is_overreaction: ratio >= threshold and LLM says "not justified"
+# TODO [STR-2.4a] overreaction_ratio: market cap lost / LLM estimated $ impact
+# TODO [STR-2.4b] is_overreaction: ratio >= threshold and LLM says "not justified"
 
 
 # ======================================================================
@@ -203,7 +205,7 @@ def earnings_clear(shock_date, entry_date, expiry, earnings_dates,
 
 def pick_short_strike(chain, post_news_low, target_delta=0.20):
     """
-    [3.2] short put closest to target delta, strike below the post-announcement low
+    [STR-3.2a] short put closest to target delta, strike below the post-announcement low
 
     chain: DataFrame of PUTS for one expiry, columns: strike, delta, bid, ask
     target_delta: 0.15 / 0.20 / 0.25
@@ -223,7 +225,7 @@ def pick_short_strike(chain, post_news_low, target_delta=0.20):
 def pick_long_strike(chain, short_strike, stock_price, method="width",
                      width_pct=0.05, target_delta=0.10):
     """
-    [3.3] long put below the short strike
+    [STR-3.3a] long put below the short strike
 
     method "width": strike closest to short_strike - width_pct * stock_price
         (width_pct: 0.025 / 0.05 / 0.075 / 0.10), snaps to a listed strike
@@ -251,7 +253,7 @@ def pick_long_strike(chain, short_strike, stock_price, method="width",
 
 def spread_credit(short_bid, short_ask, long_bid, long_ask):
     """
-    [3.4] credit for selling the spread at mid prices
+    [STR-3.4a] credit for selling the spread at mid prices
     (fill model is TBD in section 6, swap this out once it's decided)
     """
     return (short_bid + short_ask) / 2 - (long_bid + long_ask) / 2
@@ -259,7 +261,7 @@ def spread_credit(short_bid, short_ask, long_bid, long_ask):
 
 def credit_ok(credit, short_strike, long_strike, min_credit_pct=0.25):
     """
-    [3.4] credit must be >= min_credit_pct of spread width (test 0.15 / 0.20 / 0.25 / 0.33)
+    [STR-3.4b] credit must be >= min_credit_pct of spread width (test 0.15 / 0.20 / 0.25 / 0.33)
     ex: $5 wide, 0.25 -> need at least $1.25 credit
     """
     width = short_strike - long_strike
@@ -274,7 +276,7 @@ def credit_ok(credit, short_strike, long_strike, min_credit_pct=0.25):
 
 def realized_vol(returns, shock_date, as_of_date, window=3):
     """
-    [3.5] annualized realized vol since the shock, excluding the shock day
+    [STR-3.5a] annualized realized vol since the shock, excluding the shock day
 
     returns: pd.Series of daily returns indexed by date
     uses the last `window` days after the shock (fewer if not available yet, min 1)
@@ -293,7 +295,7 @@ def realized_vol(returns, shock_date, as_of_date, window=3):
 def entry_ready(days_since_shock, iv, rv, volume, avg_volume_20d, made_new_low,
                 min_days=1, max_wait=10, iv_rv_min=1.5, max_volume_mult=1.5):
     """
-    [3.5] should we enter today?
+    [STR-3.5b] should we enter today?
 
     returns "enter", "wait", or "skip" (waited too long, drop the event)
     iv: 30-day ATM implied vol, rv: from realized_vol (both annualized decimals)
@@ -326,7 +328,7 @@ def should_take_profit(credit, cost_to_close, days_held, dte_at_entry, mode="dyn
                        floor=0.50, outpace_margin=0.20, final_target=0.75,
                        fixed_target=0.50):
     """
-    [3.6] close for a profit?
+    [STR-3.6a] close for a profit?
 
     credit: credit received at entry, cost_to_close: what it costs to buy the spread back now
     captured = share of the credit we've kept, elapsed = share of the trade's time used up
@@ -362,7 +364,7 @@ def should_stop(credit, cost_to_close, width, stock_close, short_strike, post_ne
                 short_delta, llm_says_justified=False, rules=("credit_multiple",),
                 credit_multiple=2.0, max_loss_pct=0.50, max_short_delta=0.50):
     """
-    [3.7] close for a loss?
+    [STR-3.7a] close for a loss?
 
     returns the name of the first rule that fired, or None
     rules: any combination of the names below, () = no stop (hold to expiry)
@@ -400,7 +402,7 @@ def should_stop(credit, cost_to_close, width, stock_close, short_strike, post_ne
 
 def position_size(capital, width, credit, risk_pct=0.02, multiplier=100):
     """
-    [3.8] number of spreads so max loss <= risk_pct of capital (0.01 / 0.02 / 0.03)
+    [STR-3.8a] number of spreads so max loss <= risk_pct of capital (0.01 / 0.02 / 0.03)
 
     max loss per spread = (width - credit) * 100
     ex: $100k, 2% -> $2,000 budget; $5 wide, $1.25 credit -> $375 each -> 5 spreads
@@ -418,7 +420,7 @@ def position_size(capital, width, credit, risk_pct=0.02, multiplier=100):
 
 def sector_exposure(positions):
     """
-    [5] share of total capital-at-risk in each sector
+    [STR-5a] share of total capital-at-risk in each sector
 
     positions: list of dicts with keys "ticker", "sector", "max_loss" ($ max loss of the position)
     returns {sector: share}, ex: {"Tech": 0.40, "Energy": 0.60}
@@ -434,7 +436,7 @@ def sector_exposure(positions):
 
 def portfolio_ok(positions, ticker, sector, max_loss, max_sector_pct=0.30, min_positions=4):
     """
-    [5] hard backstop before adding a new position (the exposure-review agent is separate)
+    [STR-5b] hard backstop before adding a new position (the exposure-review agent is separate)
 
     - one position per ticker
     - one sector <= max_sector_pct of total capital-at-risk, only enforced once there are

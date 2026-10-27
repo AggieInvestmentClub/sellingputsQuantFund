@@ -2,3 +2,5 @@ lseg-data
 pandas
 pyarrow
 pyyaml
+python-dotenv
+pytest
