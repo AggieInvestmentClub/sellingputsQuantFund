@@ -15,10 +15,10 @@ ING (download) ──► DAT (clean) ──► EVT (find shocks) ──► STR (
 | Prefix | Folder | Docs file | Status |
 |---|---|---|---|
 | ING | `src/ingest/` | [ING_ingest.md](ING_ingest.md) | ✅ built |
-| DAT | `src/data/` | — | ⬜ not started |
+| DAT | `src/data/` | [DAT_data.md](DAT_data.md) | 🚧 security master lookups |
 | OPT | `src/options/` | [OPT_options.md](OPT_options.md) | 🚧 delta built |
 | STR | `strategy/strategy_logic.py` | [STR_strategy.md](STR_strategy.md) | ✅ built, except 2.3 / 2.4 |
-| EVT | `src/events/` | — | ⬜ not started |
+| EVT | `src/events/` | [EVT_events.md](EVT_events.md) | ✅ price-only event study |
 | BT | `src/backtest/` | — | ⬜ not started |
 | LIVE | `src/live/` | — | ⬜ not started |
 
@@ -45,6 +45,22 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | ING-13 | members_before | lseg_universe.py | Members just before a shock date | ✅ |
 | ING-14 | fetch_index_changes | lseg_universe.py | Every S&P 500 join / leave | ✅ |
 | ING-15 | save_changes | lseg_universe.py | Save joins / leaves to parquet | ✅ |
+| ING-16 | fetch_company_ids | security_master.py | LSEG company ID, name, ticker, CUSIP | ✅ |
+| ING-17 | fetch_ticker_history | security_master.py | Massive ticker history by CUSIP | ✅ |
+| ING-18 | build_security_master | security_master.py | Company IDs + Massive tickers by date | ✅ |
+| ING-19 | fetch_daily_history | lseg_prices.py | Daily bars, date index, adjusted or not | ✅ |
+| ING-20 | fetch_market_cap | lseg_reference.py | Daily company market cap | ✅ |
+| ING-21 | fetch_dividends | lseg_reference.py | Cash dividends for many RICs | ✅ |
+| ING-22 | fetch_treasury_yields | lseg_reference.py | 1/3/6-month T-bill yields (decimals) | ✅ |
+
+### DAT: data lookups (`src/data/`)
+
+| ID | Function | File | Purpose | Status |
+|---|---|---|---|---|
+| DAT-01 | lseg_option_root | security_master.py | LSEG option root from a RIC | ✅ |
+| DAT-02 | massive_ticker_from_ric | security_master.py | Fallback Massive ticker from a RIC | ✅ |
+| DAT-03 | massive_ticker_on | security_master.py | Massive ticker on a date | ✅ |
+| DAT-04 | companies | security_master.py | Group share classes by company | ✅ |
 
 ### OPT: option math (`src/options/`)
 
@@ -54,6 +70,17 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | OPT-02 | pv_dividends | greeks.py | PV of dividends before expiry | ✅ |
 | OPT-03 | bs_delta | greeks.py | Black-Scholes delta | ✅ |
 | OPT-04 | delta_from_iv | greeks.py | Delta from LSEG IV when DELTA is missing | ✅ |
+
+### EVT: event study (`src/events/`)
+
+| ID | Function | File | Purpose | Status |
+|---|---|---|---|---|
+| EVT-01 | rolling_beta | build_events.py | Beta for every day (STR-2.1a, vectorized) | ✅ |
+| EVT-02 | member_mask | build_events.py | S&P 500 member on each day | ✅ |
+| EVT-03 | near_earnings | build_events.py | Within ±3 days of earnings | ✅ |
+| EVT-04 | find_shocks | build_events.py | Shocks + returns afterwards, one stock | ✅ |
+| EVT-05 | dedupe_events | build_events.py | One event per company, 20-day cooldown | ✅ |
+| EVT-06 | summarize | build_events.py | Average abnormal return by size and horizon | ✅ |
 
 ### STR: strategy rules (`strategy/strategy_logic.py`)
 

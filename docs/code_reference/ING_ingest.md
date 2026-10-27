@@ -285,3 +285,138 @@ month-end. ING-14's join / leave dates could make it exact.
 **What it does:** Saves join / leave events to `data/raw/universe/sp500_changes.parquet`.
 
 **Inputs:** `df` (DataFrame from ING-14)  **Returns:** nothing
+
+---
+
+### ING-16  fetch_company_ids
+**File:** src/ingest/security_master.py
+**Status:** ✅ done
+
+**What it does:** For each RIC, gets LSEG's permanent company ID (`TR.OrganizationID`), company
+name, ticker and CUSIP, 100 RICs per request.
+
+**Inputs:** `rics` (list of str), `batch` (100)
+
+**Returns:** DataFrame with `ric`, `company_id`, `name`, `ticker`, `cusip`
+
+**Example:** GOOG.OQ and GOOGL.OQ → both `5030853586` (one company, two share classes)
+
+**Uses:** ING-01 session  **Used by:** ING-18
+
+**Gotchas:** RICs LSEG can't resolve get a placeholder ID `RIC:<ric>`, so they're never merged
+with another company by mistake.
+
+---
+
+### ING-17  fetch_ticker_history
+**File:** src/ingest/security_master.py
+**Status:** ✅ done
+
+**What it does:** Massive's ticker history for one security, looked up by **CUSIP**
+(`/vX/reference/tickers/{cusip}/events`).
+
+**Inputs:** `cusip` (str)
+
+**Returns:** list of `(ticker, valid_from)`, oldest first; `[]` if Massive has none
+
+**Example:** Meta's CUSIP 30303M102 → `[("FB", 2012-05-18), ("META", 2022-06-09)]`
+
+**Uses:** Massive REST (`POLYGON_API_KEY`)  **Used by:** ING-18
+
+**Gotchas:** Looked up by CUSIP, not ticker, because delisted tickers get reused by other
+companies. Delisted companies (e.g. SVB) return nothing; ING-18 falls back to the RIC.
+
+---
+
+### ING-18  build_security_master
+**File:** src/ingest/security_master.py
+**Status:** ✅ done
+
+**What it does:** For every RIC ever in the S&P 500 membership table, records its company ID,
+membership span, LSEG option root and the Massive ticker valid on each date.
+
+**Inputs:** `membership` (DataFrame `date`, `ric` from ING-12)
+
+**Returns / saves:**
+- `data/raw/universe/security_master.parquet`: `ric`, `first_member`, `last_member`,
+  `company_id`, `name`, `ticker`, `cusip`, `delisted`, `lseg_option_root`
+- `data/raw/universe/massive_tickers.parquet`: `ric`, `massive_ticker`, `valid_from`, `source`
+
+`source` is `"events"` (Massive history), `"ric_fallback"` (ticker from the RIC) or
+`"events_overridden"` (Massive history disagreed with the current ticker, so the RIC was used).
+
+**Uses:** ING-16, ING-17, DAT-01, DAT-02  **Used by:** scripts/build_security_master.py; later EVT, option downloads
+
+**Gotchas (tested Oct 2026):**
+- **LSEG uses today's RIC and option root for all history** (`META.OQ`, `METAR...^F22` work for
+  2022 when the ticker was FB). **Massive uses the ticker at the time** (FB before 2022-06-09).
+  So only Massive lookups need DAT-03.
+- Massive's ticker history can be wrong (GOOGL's said `GOOG` from 2015). For live stocks, if the
+  latest Massive ticker isn't the current one, the history is ignored (`events_overridden`).
+
+---
+
+### ING-19  fetch_daily_history
+**File:** src/ingest/lseg_prices.py
+**Status:** ✅ done
+
+**What it does:** Daily bars for one RIC with a plain date index (no timezone), the format STR
+and EVT code expect.
+
+**Inputs:** `ric`, `start`, `end`, `adjustments` (None = split-adjusted, `"unadjusted"` = as traded)
+
+**Returns:** DataFrame indexed by `date`: `TRDPRC_1` (close), `OPEN_PRC`, `HIGH_1`, `LOW_1`,
+`ACVOL_UNS` (volume), `TRNOVR_UNS` ($ volume), `VWAP`, `BID`, `ASK`, ...
+
+**Example:** AAPL 2020-08-28: adjusted 124.81, unadjusted 499.23 (4-for-1 split on 08-31)
+
+**Uses:** ING-01 session  **Used by:** scripts/overnight.py, EVT-04
+
+**Gotchas:**
+- LSEG's adjusted prices are **split-only, not dividend-adjusted**, so returns exclude dividends
+  (small). Split dates can be found where adjusted ÷ unadjusted jumps.
+- One request covers 2014–2026 (3,223 rows tested), so there's no need to split the range.
+
+---
+
+### ING-20  fetch_market_cap
+**File:** src/ingest/lseg_reference.py
+**Status:** ✅ done
+
+**What it does:** Daily company market cap for one RIC (`TR.CompanyMarketCap`).
+
+**Inputs:** `ric`, `start` ("2014-01-01"), `end` (today)
+
+**Returns:** Series `market_cap` with a date index
+
+**Uses:** ING-01 session  **Used by:** scripts/overnight.py; later STR-1.1a, STR-2.4a
+
+**Gotchas:** Company-level, so GOOG and GOOGL show the same number. Don't add them together.
+
+---
+
+### ING-21  fetch_dividends
+**File:** src/ingest/lseg_reference.py
+**Status:** ✅ done
+
+**What it does:** Cash dividends for many RICs, 50 per request.
+
+**Inputs:** `rics`, `start`, `end`, `batch` (50)
+
+**Returns:** DataFrame `ric`, `ex_date`, `amount` (gross per share, unadjusted), `div_type`
+
+**Uses:** ING-01 session  **Used by:** scripts/overnight.py; OPT-02 / OPT-04 dividend inputs
+
+---
+
+### ING-22  fetch_treasury_yields
+**File:** src/ingest/lseg_reference.py
+**Status:** ✅ done
+
+**What it does:** Daily 1/3/6-month Treasury bill yields, the risk-free rate for Black-Scholes.
+
+**Inputs:** `rics` (`US1MT=RR`, `US3MT=RR`, `US6MT=RR`), `start`, `end`
+
+**Returns:** DataFrame, one column per RIC, **already in decimals** (`B_YLD_1` / 100)
+
+**Uses:** ING-01 session  **Used by:** scripts/overnight.py; OPT-04 `r` input
