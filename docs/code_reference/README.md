@@ -16,7 +16,7 @@ ING (download) ──► DAT (clean) ──► EVT (find shocks) ──► STR (
 |---|---|---|---|
 | ING | `src/ingest/` | [ING_ingest.md](ING_ingest.md) | ✅ built |
 | DAT | `src/data/` | — | ⬜ not started |
-| OPT | `src/options/` | — | ⬜ not started |
+| OPT | `src/options/` | [OPT_options.md](OPT_options.md) | 🚧 delta built |
 | STR | `strategy/strategy_logic.py` | [STR_strategy.md](STR_strategy.md) | ✅ built, except 2.3 / 2.4 |
 | EVT | `src/events/` | — | ⬜ not started |
 | BT | `src/backtest/` | — | ⬜ not started |
@@ -45,6 +45,15 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | ING-13 | members_before | lseg_universe.py | Members just before a shock date | ✅ |
 | ING-14 | fetch_index_changes | lseg_universe.py | Every S&P 500 join / leave | ✅ |
 | ING-15 | save_changes | lseg_universe.py | Save joins / leaves to parquet | ✅ |
+
+### OPT: option math (`src/options/`)
+
+| ID | Function | File | Purpose | Status |
+|---|---|---|---|---|
+| OPT-01 | years_to_expiry | greeks.py | Years from a date to expiry | ✅ |
+| OPT-02 | pv_dividends | greeks.py | PV of dividends before expiry | ✅ |
+| OPT-03 | bs_delta | greeks.py | Black-Scholes delta | ✅ |
+| OPT-04 | delta_from_iv | greeks.py | Delta from LSEG IV when DELTA is missing | ✅ |
 
 ### STR: strategy rules (`strategy/strategy_logic.py`)
 
