@@ -220,5 +220,6 @@ __marimo__/
 .streamlit/secrets.toml
 
 lseg-data.config.json
-data/
+# downloaded data stays local (vendor terms); leading / so src/data/ code isn't ignored
+/data/
 *.parquet
