@@ -48,6 +48,13 @@ What was found in this data:
 - Raw news is mostly noise, so the plan is to find price shocks first and only look up Reuters news around those dates.
 - Some sources have timestamps later than the real publication, which would make a backtest look better than it should, so those are dropped.
 
+*** 10/29 update ***
+- Built the historical S&P 500 membership dataset from April 2015 onward because LSEG returns empty results before that date.
+- Found all S&P 500 companies represented across the full 2015-2026 period, with 138 monthly snapshots and 69,579 membership rows.
+- Unique historical RICs: 736; 132 were marked as delisted; snapshot sizes stayed in the normal 500-506 range.
+- The validation script confirmed 138 clean snapshots. The remaining `.SPX` LSEG error should be investigated separately.
+- Exported dataset: [data/sp500_membership_formatted.csv](data/sp500_membership_formatted.csv)
+
 `src/ingest has the code that downloads prices and news.
 - scripts/smoke_test is the quick connection test.
 - The other files in scripts are the checks used to understand the data.
