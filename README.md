@@ -53,7 +53,6 @@ What was found in this data:
 - Found all S&P 500 companies represented across the full 2015-2026 period, with 138 monthly snapshots and 69,579 membership rows.
 - Unique historical RICs: 736; 132 were marked as delisted; snapshot sizes stayed in the normal 500-506 range.
 - The validation script confirmed 138 clean snapshots. The remaining `.SPX` LSEG error should be investigated separately.
-- Exported dataset: [data/sp500_membership_formatted.csv](data/sp500_membership_formatted.csv)
 
 `src/ingest has the code that downloads prices and news.
 - scripts/smoke_test is the quick connection test.
