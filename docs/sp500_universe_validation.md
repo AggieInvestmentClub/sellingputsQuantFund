@@ -10,6 +10,7 @@ Build a point-in-time S&P 500 constituent universe for historical backtesting, r
 - Unique historical RICs: 736
 - RICs marked as delisted: 132
 - Constituents per snapshot: 500–506
+- [View Historical S&P 500 Membership CSV](../data/sp500_membership_formatted.csv)
 
 ## Implementation
 Used the repository's existing LSEG membership ingestion pipeline to retrieve historical S&P 500 constituents.
