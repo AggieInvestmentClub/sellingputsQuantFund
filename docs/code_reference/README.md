@@ -15,7 +15,7 @@ ING (download) ──► DAT (clean) ──► EVT (find shocks) ──► STR (
 | Prefix | Folder | Docs file | Status |
 |---|---|---|---|
 | ING | `src/ingest/` | [ING_ingest.md](ING_ingest.md) | ✅ built |
-| DAT | `src/data/` | [DAT_data.md](DAT_data.md) | 🚧 security master lookups |
+| DAT | `src/data/` | [DAT_data.md](DAT_data.md) | 🚧 security master lookups, data checks |
 | OPT | `src/options/` | [OPT_options.md](OPT_options.md) | 🚧 delta built |
 | STR | `strategy/strategy_logic.py` | [STR_strategy.md](STR_strategy.md) | ✅ built, except 2.3 / 2.4 |
 | EVT | `src/events/` | [EVT_events.md](EVT_events.md) | ✅ price-only event study |
@@ -61,6 +61,9 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | DAT-02 | massive_ticker_from_ric | security_master.py | Fallback Massive ticker from a RIC | ✅ |
 | DAT-03 | massive_ticker_on | security_master.py | Massive ticker on a date | ✅ |
 | DAT-04 | companies | security_master.py | Group share classes by company | ✅ |
+| DAT-05 | price_issues | validate.py | Problems in one stock's price file | ✅ |
+| DAT-06 | membership_issues | validate.py | Membership gaps, odd sizes, unmatched leavers | ✅ |
+| DAT-07 | split_factors | validate.py | Splits from adjusted vs unadjusted closes | ✅ |
 
 ### OPT: option math (`src/options/`)
 

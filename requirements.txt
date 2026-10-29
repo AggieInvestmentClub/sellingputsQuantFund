@@ -4,3 +4,4 @@ pyarrow
 pyyaml
 python-dotenv
 pytest
+requests

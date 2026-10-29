@@ -24,11 +24,17 @@ MEMBERSHIP = RAW / "sp500_membership.parquet"
 MIN_SIZE = 450
 
 
-def massive_has_contracts(ticker, as_of):
+def massive_has_contracts(ticker, as_of, tries=4):
+    # a 429 (rate limit) is not "no contracts": wait and retry, and fail loudly if it persists
     headers = {"Authorization": f"Bearer {os.getenv('POLYGON_API_KEY')}"}
-    r = requests.get("https://api.massive.com/v3/reference/options/contracts", headers=headers, timeout=60,
-                     params={"underlying_ticker": ticker, "as_of": as_of, "limit": 1})
-    return r.ok and len(r.json().get("results", [])) > 0
+    for i in range(tries):
+        r = requests.get("https://api.massive.com/v3/reference/options/contracts", headers=headers, timeout=60,
+                         params={"underlying_ticker": ticker, "as_of": as_of, "limit": 1})
+        if r.status_code != 429:
+            break
+        time.sleep(int(r.headers.get("Retry-After", 0)) or 15 * 2 ** i)
+    r.raise_for_status()
+    return len(r.json().get("results", [])) > 0
 
 
 with lseg_session():
@@ -87,8 +93,11 @@ for ric in random.sample(sorted(member_dates), 60):
 fails = []
 for ric, d in checks:
     t = massive_ticker_on(tickers, ric, d)
-    if not massive_has_contracts(t, d.strftime("%Y-%m-%d")):
-        fails.append((ric, d.date(), t))
+    try:
+        if not massive_has_contracts(t, d.strftime("%Y-%m-%d")):
+            fails.append((ric, d.date(), t))
+    except requests.RequestException as e:
+        fails.append((ric, d.date(), t, f"request failed: {e}"))
 print(f"checked {len(checks)} (RIC, date) pairs: {len(checks) - len(fails)} OK, {len(fails)} with no Massive contracts")
 for f in fails:
     print("  NO CONTRACTS:", f)
