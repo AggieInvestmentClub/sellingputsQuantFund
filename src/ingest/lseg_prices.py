@@ -29,7 +29,8 @@ def fetch_daily_history(ric: str, start: str, end: str, adjustments: str = None)
     [ING-19] daily bars for one RIC with a plain date index (no timezone), ready for STR / EVT code
 
     adjustments: None = split-adjusted (use for returns), "unadjusted" = as traded (price floor, strikes)
-    LSEG's adjusted prices are split-only, NOT dividend-adjusted (AAPL 2020: 506.09 / 4 = 126.52)
+    LSEG's adjusted prices cover splits and spin-offs, NOT regular dividends (AAPL 2020: 506.09 / 4 = 126.52;
+    A.N 2014-11-03 Keysight spin-off: factor 1.40, see DAT-07)
     one request covers 2014-2026 (3,223 rows tested)
     """
     kwargs = {"interval": "daily", "start": start, "end": end}

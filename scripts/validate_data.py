@@ -75,7 +75,8 @@ print(f"\nprices: {len(rics)} RICs | files checked: {len(pi)} | not downloaded o
 if len(pi):
     flagged = pi[(pi["problems"] != "") & (pi["problems"] != "empty")]
     print(f"  files with problems: {len(flagged)}")
-    print(flagged[["ric", "rows", "first", "last", "problems"]].head(25).to_string(index=False))
-print(f"  splits found (adjusted vs unadjusted): {len(sp)}")
+    if len(flagged):
+        print(flagged[["ric", "rows", "first", "last", "problems"]].head(25).to_string(index=False))
+print(f"  price adjustments found (splits, spin-offs; adjusted vs unadjusted): {len(sp)}")
 print(f"\nfull lists in {OUT}/ : membership_issues.csv, price_issues.csv, missing_prices.csv, splits.csv")
 print("Re-download a missing / empty RIC by deleting its file and re-running scripts/overnight.py.")

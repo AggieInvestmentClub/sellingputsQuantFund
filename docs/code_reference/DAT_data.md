@@ -144,16 +144,16 @@ differs from the snapshot's.
 **File:** src/data/validate.py
 **Status:** ✅ done
 
-**What it does:** Finds splits by comparing adjusted and unadjusted closes. LSEG's adjusted
-prices are split-only, so unadjusted ÷ adjusted stays constant between splits and jumps on the
-split date.
+**What it does:** Finds price adjustments by comparing adjusted and unadjusted closes. LSEG
+adjusts for splits and capital changes such as spin-offs (not regular dividends), so
+unadjusted ÷ adjusted stays constant between those events and jumps on their ex-date.
 
 **Inputs:**
 | name | type | meaning | default |
 |---|---|---|---|
 | adj_close | Series | adjusted close, date index (ING-19, default) | |
 | unadj_close | Series | unadjusted close, date index (ING-19, "unadjusted") | |
-| tol | float | relative change in the ratio that counts as a split | 0.005 |
+| tol | float | relative change in the ratio that counts as an adjustment | 0.005 |
 
 **Returns:** DataFrame (date, ratio_before, ratio_after, split), one row per split; empty if none.
 `split` = ratio_before ÷ ratio_after: 4.0 = 4-for-1, 0.1 = 1-for-10 reverse split.
@@ -164,5 +164,8 @@ split date.
 **Uses:** ING-19 output  **Used by:** scripts/validate_data.py; later the price floor and strike
 checks (they need unadjusted prices on the trade date)
 
-**Gotchas:** The date is the first day at the new ratio (the split's ex-date). A ratio change
-with no known split points to a bad adjusted series.
+**Gotchas:** The date is the first day at the new ratio (the ex-date). A round `split` (2, 3,
+4, 0.1) is a split; a non-round one is usually a spin-off (A.N 2014-11-03 Keysight 1.40, BAX
+2015-07-01 Baxalta 1.84, CAG 2016-11-10 Lamb Weston 1.29) or a special distribution. That
+adjustment is what we want for returns: unadjusted, a spin-off day looks like a -30% shock.
+Ratios that jump back and forth (AIV.N late 2020) point to a bad adjusted series.

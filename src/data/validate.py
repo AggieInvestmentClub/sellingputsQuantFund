@@ -133,11 +133,13 @@ def membership_issues(membership, changes=None, min_size=450, max_size=510):
 
 def split_factors(adj_close, unadj_close, tol=0.005):
     """
-    [DAT-07] splits found by comparing adjusted and unadjusted closes (ING-19, both versions)
+    [DAT-07] price adjustments (splits, spin-offs) found by comparing adjusted and unadjusted closes
 
-    LSEG's adjusted prices are split-only, so unadjusted / adjusted is constant between splits.
+    LSEG adjusts for splits and capital changes such as spin-offs, not regular dividends, so
+    unadjusted / adjusted is constant between those events.
     returns a DataFrame (date, ratio_before, ratio_after, split): one row per day the ratio
-    changes by more than tol; split = ratio_before / ratio_after (4.0 = 4-for-1, 0.1 = 1-for-10)
+    changes by more than tol; split = ratio_before / ratio_after (4.0 = 4-for-1, 0.1 = 1-for-10,
+    a non-round value like 1.40 is usually a spin-off: A.N 2014-11-03, Keysight)
     """
     both = pd.concat([pd.to_numeric(adj_close, errors="coerce"),
                       pd.to_numeric(unadj_close, errors="coerce")], axis=1, keys=["adj", "raw"])

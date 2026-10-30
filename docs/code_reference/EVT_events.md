@@ -136,3 +136,57 @@ cumulative) and horizon.
 
 **Gotchas:** `t_stat` assumes events are independent. Shocks cluster in time (e.g. March 2020),
 so treat it as optimistic until the Monte Carlo block bootstrap.
+
+---
+
+### EVT-07  entry_returns
+**File:** src/events/analysis.py
+**Status:** ✅ done
+
+**What it does:** Returns from a realistic entry. EVT-04's `car_h` enters at the shock-day close;
+the spec (3.5) enters on day +1 at the earliest, once volume settles. This re-measures each event
+entering at the close of day +1 and day +3, and adds the worst close during the hold, which is
+what decides whether a put spread loses.
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| events | DataFrame | one stock's events with `date`, `beta` (EVT-04 / EVT-05) | |
+| close | Series | split-adjusted close, date index (ING-19) | |
+| spy_ret | Series | SPY daily returns | |
+| lags | tuple | entry days after the shock | (1, 3) |
+| holds | tuple | holding days after entry | (5, 10, 20) |
+
+**Returns:** `events` plus, for each lag L and hold H: `car_eL_H` (abnormal, pre-shock beta),
+`ret_eL_H` (raw, compounded), `low_eL_H` (worst close in the hold ÷ entry close − 1). NaN if the
+stock has no data that far.
+
+**Example:** shock close 90, entry close (+1) 92, next closes 95, 93, 99 →
+`ret_e1_3 = 99/92 − 1 = 0.076`, `low_e1_3 = 93/92 − 1 = 0.011`
+
+**Uses:** EVT-04 / EVT-05 output  **Used by:** scripts/analyze_events.py
+
+**Gotchas:** With lag 0 it gives exactly EVT-04's `car_h` / `ret_h` (tested). `low` uses closes
+only; an intraday low can be worse.
+
+---
+
+### EVT-08  robust_summary
+**File:** src/events/analysis.py
+**Status:** ✅ done
+
+**What it does:** Mean, median and t-stat per column, plus a t-stat that averages same-day events
+first (so a crash day with 40 shocks counts once) and the share of events that lost `tail` or more.
+
+**Inputs:** `events` (with `date`), `cols` (list of columns), `tail` (−0.10)
+
+**Returns:** DataFrame `column`, `n`, `n_dates`, `mean`, `median`, `t_stat`, `t_by_date`,
+`pct_positive`, `pct_tail`
+
+**Example:** four events of −0.20 on 2020-03-09 and +0.05, +0.03 on other days → `n = 6`,
+`n_dates = 3`, `mean = −0.12`, `pct_tail = 0.67`, `t_by_date` from the three daily means
+
+**Uses:** —  **Used by:** scripts/analyze_events.py
+
+**Gotchas:** `t_by_date` fixes same-day clustering only. Shocks a few days apart in the same
+selloff are still treated as independent; the block bootstrap planned for the backtest handles that.

@@ -63,7 +63,7 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | DAT-04 | companies | security_master.py | Group share classes by company | ✅ |
 | DAT-05 | price_issues | validate.py | Problems in one stock's price file | ✅ |
 | DAT-06 | membership_issues | validate.py | Membership gaps, odd sizes, unmatched leavers | ✅ |
-| DAT-07 | split_factors | validate.py | Splits from adjusted vs unadjusted closes | ✅ |
+| DAT-07 | split_factors | validate.py | Splits / spin-offs from adjusted vs unadjusted closes | ✅ |
 
 ### OPT: option math (`src/options/`)
 
@@ -84,6 +84,8 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | EVT-04 | find_shocks | build_events.py | Shocks + returns afterwards, one stock | ✅ |
 | EVT-05 | dedupe_events | build_events.py | One event per company, 20-day cooldown | ✅ |
 | EVT-06 | summarize | build_events.py | Average abnormal return by size and horizon | ✅ |
+| EVT-07 | entry_returns | analysis.py | Returns from a day +1 / +3 entry, worst close in the hold | ✅ |
+| EVT-08 | robust_summary | analysis.py | Stats with same-day shocks counted once, tail share | ✅ |
 
 ### STR: strategy rules (`strategy/strategy_logic.py`)
 

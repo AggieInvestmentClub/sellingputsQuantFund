@@ -373,7 +373,7 @@ and EVT code expect.
 **Uses:** ING-01 session  **Used by:** scripts/overnight.py, EVT-04
 
 **Gotchas:**
-- LSEG's adjusted prices are **split-only, not dividend-adjusted**, so returns exclude dividends
+- LSEG's adjusted prices cover **splits and spin-offs, not regular dividends**, so returns exclude dividends (spin-off factors: see DAT-07)
   (small). Split dates can be found where adjusted ÷ unadjusted jumps.
 - One request covers 2014–2026 (3,223 rows tested), so there's no need to split the range.
 
