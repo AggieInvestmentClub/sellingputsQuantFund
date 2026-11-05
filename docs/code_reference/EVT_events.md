@@ -190,3 +190,87 @@ first (so a crash day with 40 shocks counts once) and the share of events that l
 
 **Gotchas:** `t_by_date` fixes same-day clustering only. Shocks a few days apart in the same
 selloff are still treated as independent; the block bootstrap planned for the backtest handles that.
+
+---
+
+### EVT-09  event_windows
+**File:** src/events/option_panel.py
+**Status:** ✅ done
+
+**What it does:** For each shock, the option root and the range of dates and expiries the backtest may need: entry on day +1 .. +max_wait, 14–35 days to expiry at entry.
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| events | DataFrame | EVT-05 output (ric, date) | |
+| tickers | DataFrame | Massive ticker history (ING-18) | |
+| first_day, last_day | date | first / last day with option files | |
+| max_wait, min_dte, max_dte | int | STR-3.5b wait, STR-1.4b expiry window | 10, 14, 35 |
+
+**Returns:** one row per event: `event_id` ("RIC|YYYY-MM-DD"), `ric`, `date`, `root`, `min_expiry`, `max_expiry`, `window_end`, `complete` (False if the window runs past the data). Events before first_day are dropped.
+
+**Example:** META.OQ shock on 2022-03-01 → root FB, expiries 2022-03-16 .. 2022-04-19
+
+**Uses:** DAT-03, OPT-06  **Used by:** EVT-10, scripts/build_option_panel.py
+
+**Gotchas:** Calendar-day DTE; holidays can shift the business-day offsets by a day.
+
+---
+
+### EVT-10  select_event_puts
+**File:** src/events/option_panel.py
+**Status:** ✅ done
+
+**What it does:** From one day's flat file, keeps the puts each active event could use (its root, expiry inside its window, not expired).
+
+**Inputs:** `day` (flat file + OPT-05 columns), `date` (that trading day), `windows` (EVT-09)
+
+**Returns:** rows `event_id`, `ric`, `date`, `ticker`, `root`, `expiry`, `strike`, `open`, `high`, `low`, `close`, `volume`, `transactions`
+
+**Example:** META shock 2024-06-03, file of 2024-06-04 → keeps the 2024-07-05 $450 put, drops the 2024-06-14 expiry (too short), calls, and other roots
+
+**Uses:** OPT-05  **Used by:** scripts/build_option_panel.py
+
+**Gotchas:** Day aggregates only list contracts that **traded** that day: a strike with no trades is missing that day, not unlisted.
+
+---
+
+### EVT-11  root_volume
+**File:** src/events/option_panel.py
+**Status:** ✅ done
+
+**What it does:** Total option volume per underlying for one day (calls + puts), the input to STR-1.4a's average options volume.
+
+**Inputs:** `day` (flat file + OPT-05 columns), `date`, `roots`
+
+**Returns:** `date`, `root`, `opt_volume`, `put_volume`, `contracts_traded`
+
+**Example:** META that day: 50 + 100 put contracts and 70 + 10 more → `opt_volume` 230, `put_volume` 160 (tested)
+
+**Uses:** OPT-05  **Used by:** scripts/build_option_panel.py
+
+**Gotchas:** Volume only, no open interest (not in day aggregates).
+
+---
+
+### EVT-12  add_iv_delta
+**File:** src/events/option_panel.py
+**Status:** ✅ done
+
+**What it does:** Implied vol and delta for every put in the panel from its closing price, the unadjusted stock close, the 1-month T-bill rate and the cash dividends before expiry.
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| panel | DataFrame | EVT-10 rows | |
+| closes | DataFrame | ric, date, close (UNADJUSTED, ING-19) | |
+| rates | Series | risk-free rate by date, decimal (ING-22 US1MT=RR) | |
+| dividends | DataFrame | ING-21 output | |
+
+**Returns:** panel plus `S`, `T`, `r`, `pv_div`, `iv` (OPT-08), `delta` (OPT-09)
+
+**Example:** AAPL 2025-03-14, $200 put to 2025-05-02 at 4.69 → iv 0.346, delta −0.27
+
+**Uses:** OPT-02 logic, OPT-08, OPT-09  **Used by:** scripts/build_option_panel.py, the backtest
+
+**Gotchas:** Same caveats as OPT-08 (American puts, last-trade close).

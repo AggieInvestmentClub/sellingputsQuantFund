@@ -16,9 +16,9 @@ ING (download) ──► DAT (clean) ──► EVT (find shocks) ──► STR (
 |---|---|---|---|
 | ING | `src/ingest/` | [ING_ingest.md](ING_ingest.md) | ✅ built |
 | DAT | `src/data/` | [DAT_data.md](DAT_data.md) | 🚧 security master lookups, data checks |
-| OPT | `src/options/` | [OPT_options.md](OPT_options.md) | 🚧 delta built |
+| OPT | `src/options/` | [OPT_options.md](OPT_options.md) | 🚧 delta, implied vol, OCC symbols |
 | STR | `strategy/strategy_logic.py` | [STR_strategy.md](STR_strategy.md) | ✅ built, except 2.3 / 2.4 |
-| EVT | `src/events/` | [EVT_events.md](EVT_events.md) | ✅ price-only event study |
+| EVT | `src/events/` | [EVT_events.md](EVT_events.md) | ✅ price-only event study, option panel per event |
 | BT | `src/backtest/` | — | ⬜ not started |
 | LIVE | `src/live/` | — | ⬜ not started |
 
@@ -73,6 +73,11 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | OPT-02 | pv_dividends | greeks.py | PV of dividends before expiry | ✅ |
 | OPT-03 | bs_delta | greeks.py | Black-Scholes delta | ✅ |
 | OPT-04 | delta_from_iv | greeks.py | Delta from LSEG IV when DELTA is missing | ✅ |
+| OPT-05 | parse_occ | chains.py | Split OCC option symbols (root, expiry, put/call, strike) | ✅ |
+| OPT-06 | occ_root | chains.py | Option root for a ticker (BRK.B -> BRKB) | ✅ |
+| OPT-07 | bs_price | chains.py | Black-Scholes price, numpy arrays | ✅ |
+| OPT-08 | implied_vol | chains.py | Implied vol from price (bisection, arrays) | ✅ |
+| OPT-09 | bs_delta_vec | chains.py | Black-Scholes delta, numpy arrays | ✅ |
 
 ### EVT: event study (`src/events/`)
 
@@ -86,6 +91,10 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | EVT-06 | summarize | build_events.py | Average abnormal return by size and horizon | ✅ |
 | EVT-07 | entry_returns | analysis.py | Returns from a day +1 / +3 entry, worst close in the hold | ✅ |
 | EVT-08 | robust_summary | analysis.py | Stats with same-day shocks counted once, tail share | ✅ |
+| EVT-09 | event_windows | option_panel.py | Option root, dates and expiries each event needs | ✅ |
+| EVT-10 | select_event_puts | option_panel.py | One day's usable puts per active event | ✅ |
+| EVT-11 | root_volume | option_panel.py | Daily option volume per underlying (STR-1.4a) | ✅ |
+| EVT-12 | add_iv_delta | option_panel.py | IV and delta for every put in the panel | ✅ |
 
 ### STR: strategy rules (`strategy/strategy_logic.py`)
 

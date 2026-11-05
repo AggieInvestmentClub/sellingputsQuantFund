@@ -128,3 +128,107 @@ subtracts upcoming dividends from the stock price, and returns Black-Scholes del
 **Gotchas:** Raises ValueError when `iv > 5` or `r > 0.25`, which almost always means a percent
 was passed. It can't catch every case: in 2021, yields were around 0.05%, so passing `0.05`
 by mistake looks like a valid 5%. Always divide `B_YLD_1` by 100.
+
+---
+
+### OPT-05  parse_occ
+**File:** src/options/chains.py
+**Status:** ✅ done
+
+**What it does:** Splits OCC option symbols from the OPRA flat files into root, expiry, put/call and strike.
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| tickers | Series | symbols like `O:AAPL250321P00200000` | |
+
+**Returns:** DataFrame (same index): `root`, `expiry` (Timestamp), `kind` ("put"/"call"), `strike` (float). Rows that don't match the OCC pattern are NaN.
+
+**Example:** `O:BRKB241115C00450500` → BRKB, 2024-11-15, call, 450.5
+
+**Uses:** —  **Used by:** EVT-10, EVT-11, scripts/build_option_panel.py
+
+**Gotchas:** The root is the ticker on that date (FB before 2022-06-09), not today's. Adjusted contracts after corporate actions can carry a numbered root (`AAPL1`); they don't match our roots and are left out.
+
+---
+
+### OPT-06  occ_root
+**File:** src/options/chains.py
+**Status:** ✅ done
+
+**What it does:** OCC option root for a stock ticker: removes the share-class dot.
+
+**Inputs:** `ticker` (str): Massive ticker on the event date (DAT-03)
+
+**Returns:** str, or None for a missing ticker
+
+**Example:** `"BRK.B"` → `"BRKB"`, `"BF.B"` → `"BFB"`, `"META"` → `"META"`
+
+**Uses:** —  **Used by:** EVT-09
+
+**Gotchas:** None known.
+
+---
+
+### OPT-07  bs_price
+**File:** src/options/chains.py
+**Status:** ✅ done
+
+**What it does:** Black-Scholes price of a European put or call; takes numbers or numpy arrays.
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| S | float/array | stock price net of dividends' PV (OPT-02) | |
+| K, T, r, vol | float/array | strike, years, rate and vol (decimals) | |
+| kind | str | "put" or "call" | "put" |
+
+**Returns:** price per share; discounted intrinsic value when T ≤ 0 or vol ≤ 0
+
+**Example:** S 100, K 95, T 0.25, r 0.04, vol 0.30 → call − put = 100 − 95·e^(−0.01) (put-call parity, tested)
+
+**Uses:** —  **Used by:** OPT-08
+
+**Gotchas:** European model; see OPT-08 on American puts.
+
+---
+
+### OPT-08  implied_vol
+**File:** src/options/chains.py
+**Status:** ✅ done
+
+**What it does:** Implied vol from an option's price by bisection on OPT-07, for whole arrays at once (one call per panel).
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| price | float/array | option price per share (flat-file close) | |
+| S, K, T, r | float/array | as OPT-07 (S net of dividends' PV) | |
+| kind | str | "put" or "call" | "put" |
+| lo, hi | float | vol search range | 0.01, 5.0 |
+
+**Returns:** vol (decimal), NaN where nothing in [lo, hi] fits: price ≤ intrinsic, above the vol-5.0 price, T ≤ 0, or missing inputs
+
+**Example:** AAPL $200 put expiring 2025-05-02, close 4.69 on 2025-03-14, S 213.49, r 4.3% → 0.346
+
+**Uses:** OPT-07  **Used by:** EVT-12
+
+**Gotchas:** US stock options are American; for deep in-the-money puts the European price can sit below intrinsic and the IV comes out NaN or too low. The strategy trades out-of-the-money puts (delta 0.05–0.30), where this matters little. The flat-file close is the last trade, which can be earlier than the 4 pm stock close: thinly traded strikes give noisy IVs.
+
+---
+
+### OPT-09  bs_delta_vec
+**File:** src/options/chains.py
+**Status:** ✅ done
+
+**What it does:** OPT-03's Black-Scholes delta on numpy arrays, for whole chains.
+
+**Inputs:** `S` (net of dividends' PV), `K`, `T`, `r`, `vol`, `kind` ("put")
+
+**Returns:** delta array (puts negative), NaN where vol or T is missing or ≤ 0
+
+**Example:** S 100, K 95, T 0.1, r 0.04, vol 0.3 → same as `bs_delta(100, 95, 0.1, 0.04, 0.3)` (tested)
+
+**Uses:** —  **Used by:** EVT-12
+
+**Gotchas:** None known.

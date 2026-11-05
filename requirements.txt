@@ -5,3 +5,4 @@ pyyaml
 python-dotenv
 pytest
 requests
+scipy
