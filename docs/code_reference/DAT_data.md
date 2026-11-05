@@ -169,3 +169,47 @@ checks (they need unadjusted prices on the trade date)
 2015-07-01 Baxalta 1.84, CAG 2016-11-10 Lamb Weston 1.29) or a special distribution. That
 adjustment is what we want for returns: unadjusted, a spin-off day looks like a -30% shock.
 Ratios that jump back and forth (AIV.N late 2020) point to a bad adjusted series.
+
+---
+
+### DAT-08  first_versions
+**File:** src/data/news.py
+**Status:** ✅ done
+
+**What it does:** One row per Reuters story. LSEG lists every update of a story as its own
+headline (`storyId` ending `:0`, `:1`, ...); this keeps the earliest, so the time is when the
+news first broke.
+
+**Inputs:** `news` (DataFrame from ING-06 / ING-23 with `storyId`, `event_time`)
+
+**Returns:** the same columns, one row per story, sorted by `event_time`
+
+**Example:** `...:nA1:0` at 15:00 and `...:nA1:1` at 15:10 → only the 15:00 row
+
+**Uses:** ING-23 output  **Used by:** scripts/download_event_reuters.py; later the LLM filter (2.4)
+
+---
+
+### DAT-09  before_decision
+**File:** src/data/news.py
+**Status:** ✅ done
+
+**What it does:** Keeps headlines published before the decision time, the market close on the
+shock day in New York time. Anything later wasn't known when we decide (STR-2.4 look-ahead rule).
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| news | DataFrame | headlines with `event_time` (UTC) | — |
+| shock_date | date | the shock day | — |
+| close | str | decision time, local | `"16:00"` |
+| tz | str | market time zone | `"America/New_York"` |
+
+**Returns:** rows strictly before the cutoff
+
+**Example:** shock 2025-05-14 (daylight saving): cutoff 20:00 UTC; shock 2025-01-14: 21:00 UTC
+
+**Uses:** —  **Used by:** scripts/download_event_reuters.py; later the LLM filter (2.4)
+
+**Gotchas:** Early-close days (1 p.m.) aren't handled; a 13:30 headline on those days counts as
+before the decision though the market had closed.

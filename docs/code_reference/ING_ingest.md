@@ -144,6 +144,36 @@ sorts oldest to newest.
 
 ---
 
+### ING-23  fetch_event_headlines
+**File:** src/ingest/lseg_news.py
+**Status:** ✅ done
+
+**What it does:** Reuters headlines around one shock: from 3 calendar days before the shock day
+to the end of the day after it (UTC). `Source:RTRS` is part of the query, so LSEG filters to
+Reuters and one event is usually one request.
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| ric | str | stock; delisted RICs (`MRO.N^K24`) are queried by their base RIC | — |
+| date | date | shock day | — |
+| days_before, days_after | int | calendar days of headlines either side | 3, 1 |
+| reuters_only | bool | add `Source:RTRS` to the query | True |
+
+**Returns:** ING-06 columns plus `shock_date`; an empty frame with the same columns if nothing found
+
+**Example:** IQV.N, 2025-05-14 → 1 Reuters story (vs 100 headlines from all sources)
+
+**Uses:** ING-05  **Used by:** scripts/download_event_reuters.py
+
+**Gotchas:**
+- Headlines after the decision time are kept on purpose (for later analysis). Filter with DAT-09
+  before anything reaches the LLM.
+- A delisted company's base RIC can be reused by a new company later; headlines are from around
+  the shock date, so this only matters if the reuse happened within days.
+
+---
+
 ### ING-07  save_news
 **File:** src/ingest/lseg_news.py
 **Status:** ✅ done

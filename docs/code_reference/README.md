@@ -52,6 +52,7 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | ING-20 | fetch_market_cap | lseg_reference.py | Daily company market cap | ✅ |
 | ING-21 | fetch_dividends | lseg_reference.py | Cash dividends for many RICs | ✅ |
 | ING-22 | fetch_treasury_yields | lseg_reference.py | 1/3/6-month T-bill yields (decimals) | ✅ |
+| ING-23 | fetch_event_headlines | lseg_news.py | Reuters headlines around one shock | ✅ |
 
 ### DAT: data lookups (`src/data/`)
 
@@ -64,6 +65,8 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | DAT-05 | price_issues | validate.py | Problems in one stock's price file | ✅ |
 | DAT-06 | membership_issues | validate.py | Membership gaps, odd sizes, unmatched leavers | ✅ |
 | DAT-07 | split_factors | validate.py | Splits / spin-offs from adjusted vs unadjusted closes | ✅ |
+| DAT-08 | first_versions | news.py | One row per Reuters story (earliest version) | ✅ |
+| DAT-09 | before_decision | news.py | Headlines before the close on the shock day | ✅ |
 
 ### OPT: option math (`src/options/`)
 

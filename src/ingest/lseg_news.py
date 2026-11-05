@@ -59,6 +59,33 @@ def fetch_headlines(ric: str, start: str, end: str, page: int = 100,
     return out.drop_duplicates("storyId").sort_values("event_time")
 
 
+def fetch_event_headlines(ric: str, date, days_before: int = 3, days_after: int = 1,
+                          reuters_only: bool = True) -> pd.DataFrame:
+    """
+    [ING-23] headlines around one shock: from `days_before` calendar days before the shock day to
+    the end of `days_after` days after it (UTC). Reuters only by default (Source:RTRS in the query,
+    so LSEG filters it and one event is usually one request)
+
+    ric: delisted RICs ("MRO.N^K24") are queried by their base RIC ("MRO.N")
+    returns ING-06's columns plus `shock_date`; empty DataFrame (same columns) if nothing found
+    """
+    base = ric.split("^")[0]
+    query = f"R:{base} AND Language:LEN" + (" AND Source:RTRS" if reuters_only else "")
+    day = pd.Timestamp(date).normalize()
+    start_ts = (day - pd.Timedelta(days=days_before)).tz_localize("UTC")
+    end_ts = (day + pd.Timedelta(days=days_after + 1)).tz_localize("UTC") - pd.Timedelta(seconds=1)
+    frames = _fetch_window(query, start_ts, end_ts, 100)
+    cols = ["event_time", "headline", "storyId", "sourceCode", "data_available_time", "ric", "shock_date"]
+    if not frames:
+        return pd.DataFrame(columns=cols)
+    out = pd.concat(frames)
+    out.index = pd.to_datetime(out.index, utc=True)
+    out = out.reset_index().rename(columns={out.index.name or "index": "event_time"})
+    out["data_available_time"] = out["event_time"]
+    out["ric"], out["shock_date"] = ric, day
+    return out.drop_duplicates("storyId").sort_values("event_time")[cols].reset_index(drop=True)
+
+
 def save_news(ric: str, df: pd.DataFrame) -> Path:
     """[ING-07] save headlines to data/raw/news/<RIC>.parquet"""
     RAW.mkdir(parents=True, exist_ok=True)
