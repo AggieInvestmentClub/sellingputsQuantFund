@@ -31,3 +31,22 @@ def before_decision(news, shock_date, close="16:00", tz="America/New_York"):
     cutoff = pd.Timestamp(f"{pd.Timestamp(shock_date).date()} {close}", tz=tz).tz_convert("UTC")
     t = pd.to_datetime(news["event_time"], utc=True)
     return news[t < cutoff].reset_index(drop=True)
+
+
+def on_shock_day(news, shock_date, close="16:00", tz="America/New_York"):
+    """
+    [DAT-10] headlines from the previous trading day's close to the shock day's close (New York
+    time): the news that can explain the drop. Previous trading day = previous weekday (holidays
+    are not skipped, so after a holiday the window is one day longer)
+
+    news: DataFrame with event_time (UTC). returns the rows in [previous close, shock close)
+    """
+    if news.empty:
+        return news
+    day = pd.Timestamp(shock_date).normalize()
+    prev = day - pd.offsets.BDay(1)
+    start = pd.Timestamp(f"{prev.date()} {close}", tz=tz).tz_convert("UTC")
+    end = pd.Timestamp(f"{day.date()} {close}", tz=tz).tz_convert("UTC")
+    t = pd.to_datetime(news["event_time"], utc=True)
+    return news[(t >= start) & (t < end)].reset_index(drop=True)
+

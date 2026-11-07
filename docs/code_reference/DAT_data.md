@@ -186,7 +186,7 @@ news first broke.
 
 **Example:** `...:nA1:0` at 15:00 and `...:nA1:1` at 15:10 → only the 15:00 row
 
-**Uses:** ING-23 output  **Used by:** scripts/download_event_reuters.py; later the LLM filter (2.4)
+**Uses:** ING-23 output  **Used by:** scripts/download_event_news.py; later the LLM filter (2.4)
 
 ---
 
@@ -209,7 +209,28 @@ shock day in New York time. Anything later wasn't known when we decide (STR-2.4 
 
 **Example:** shock 2025-05-14 (daylight saving): cutoff 20:00 UTC; shock 2025-01-14: 21:00 UTC
 
-**Uses:** —  **Used by:** scripts/download_event_reuters.py; later the LLM filter (2.4)
+**Uses:** —  **Used by:** scripts/download_event_news.py; later the LLM filter (2.4)
 
 **Gotchas:** Early-close days (1 p.m.) aren't handled; a 13:30 headline on those days counts as
 before the decision though the market had closed.
+
+---
+
+### DAT-10  on_shock_day
+**File:** src/data/news.py
+**Status:** ✅ done
+
+**What it does:** Keeps headlines from the previous trading day's close to the shock day's close
+(New York time): the news that can explain the drop. Used to pick which story texts to download.
+
+**Inputs:** `news` (DataFrame with `event_time`, UTC), `shock_date`, `close` (`"16:00"`), `tz` (`"America/New_York"`)
+
+**Returns:** rows in [previous close, shock-day close)
+
+**Example:** shock Monday 2025-05-12 → Friday 2025-05-09 20:00 UTC to Monday 20:00 UTC
+
+**Uses:** —  **Used by:** scripts/download_event_news.py; later the LLM filter (2.4)
+
+**Gotchas:** Previous trading day = previous weekday; market holidays aren't skipped, so after a
+holiday the window starts one day later than it should (it misses the holiday-eve evening).
+

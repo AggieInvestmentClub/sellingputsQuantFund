@@ -1,6 +1,6 @@
 # LLM news filter: model and setup (spec 2.3 / 2.4)
 
-**Status (2026-11-05):** model picked, inputs pulled (`scripts/download_event_news.py`), prompt and
+**Status (2026-11-05):** model picked, inputs pulled (`scripts/download_event_news.py`: Reuters headlines + story texts), prompt and
 tests specified below. Code not written yet (STR-2.3a, STR-2.4a, STR-2.4b are TODO in `strategy_logic.py`).
 
 ## 1. Model
@@ -29,15 +29,15 @@ Controls, in this order:
 2. **Clean test set = events after the cutoff.** If the cutoff is mid-2025, that is about Jul 2025 – Oct 2026
    (~1,000 events). Results here are the ones we trust.
 3. **Events before the cutoff only with anonymization that passes the recognition test** (section 4).
-4. **No future information in the prompt:** only headlines with `before_decision = True`
-   (published by the shock day 21:00 UTC), no year, no dates, no stock moves after the shock.
+4. **No future information in the prompt:** only headlines published before the shock-day close
+   (16:00 New York time, DAT-09; 20:00 UTC in summer, 21:00 UTC in winter), no year, no dates, no stock moves after the shock.
 
 ## 3. Inputs per event
 
 | Field | Source | Notes |
 |---|---|---|
-| Headlines before the decision | `data/raw/news/events/<event>.parquet`, `before_decision == True` | Reuters (`NS:RTRS`) first, then others; max 30; first version of each Reuters story only |
-| Up to 2 Reuters story texts | `data/raw/news/stories/<event>.parquet` | truncated to 2,000 characters each |
+| Headlines before the decision | `data/raw/news/reuters_events/<RIC>_<YYYYMMDD>.parquet` | Reuters only; first version of each story (DAT-08), published before the shock-day close in New York time (DAT-09); max 30 |
+| Up to 2 Reuters story texts | `data/raw/news/reuters_stories/<RIC>_<YYYYMMDD>.parquet` | first stories that broke between the previous close and the shock-day close (DAT-10), else the latest before the close; truncated to 2,000 characters each |
 | Sector, industry | `data/raw/reference/gics.parquet` | GICS sector + industry |
 | Market cap before the shock | `data/raw/market_cap/` | rounded to the nearest $5B in the prompt |
 | Shock size | `events.csv` `abnormal` | beta-adjusted 1-day return |

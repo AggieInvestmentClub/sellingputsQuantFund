@@ -53,6 +53,7 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | ING-21 | fetch_dividends | lseg_reference.py | Cash dividends for many RICs | ✅ |
 | ING-22 | fetch_treasury_yields | lseg_reference.py | 1/3/6-month T-bill yields (decimals) | ✅ |
 | ING-23 | fetch_event_headlines | lseg_news.py | Reuters headlines around one shock | ✅ |
+| ING-24 | fetch_story_text | lseg_news.py | Full text of one story | ✅ |
 
 ### DAT: data lookups (`src/data/`)
 
@@ -67,6 +68,7 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | DAT-07 | split_factors | validate.py | Splits / spin-offs from adjusted vs unadjusted closes | ✅ |
 | DAT-08 | first_versions | news.py | One row per Reuters story (earliest version) | ✅ |
 | DAT-09 | before_decision | news.py | Headlines before the close on the shock day | ✅ |
+| DAT-10 | on_shock_day | news.py | Headlines from the previous close to the shock-day close | ✅ |
 
 ### OPT: option math (`src/options/`)
 
@@ -78,9 +80,9 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | OPT-04 | delta_from_iv | greeks.py | Delta from LSEG IV when DELTA is missing | ✅ |
 | OPT-05 | parse_occ | chains.py | Split OCC option symbols (root, expiry, put/call, strike) | ✅ |
 | OPT-06 | occ_root | chains.py | Option root for a ticker (BRK.B -> BRKB) | ✅ |
-| OPT-07 | bs_price | chains.py | Black-Scholes price, numpy arrays | ✅ |
-| OPT-08 | implied_vol | chains.py | Implied vol from price (bisection, arrays) | ✅ |
-| OPT-09 | bs_delta_vec | chains.py | Black-Scholes delta, numpy arrays | ✅ |
+| OPT-07 | bs_price | greeks.py | Black-Scholes price, numpy arrays | ✅ |
+| OPT-08 | implied_vol | greeks.py | Implied vol from price (bisection, arrays) | ✅ |
+| OPT-09 | bs_delta_vec | greeks.py | Black-Scholes delta, numpy arrays | ✅ |
 
 ### EVT: event study (`src/events/`)
 

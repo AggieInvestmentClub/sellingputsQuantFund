@@ -64,6 +64,6 @@ exists in the code, or if two functions share an ID. Fix what it prints, then pu
 - **Keys stay local.** Put them in `.env` (copy `.env.example`). Never commit `.env` or
   `lseg-data.config.json`; a deleted file still lives in git history.
 - **Pull before you push:** `git pull --rebase`, then `git push`.
-- **Run scripts from the repo root**, e.g. `python scripts/smoke_test.py`.
+- **Run scripts from the repo root**, e.g. `python scripts/download_event_news.py --limit 20`.
 - **Returns are decimals** (`0.012` = 1.2%). Option prices and credits are **per share**
   (x100 for one contract).

@@ -171,7 +171,7 @@ by mistake looks like a valid 5%. Always divide `B_YLD_1` by 100.
 ---
 
 ### OPT-07  bs_price
-**File:** src/options/chains.py
+**File:** src/options/greeks.py
 **Status:** ✅ done
 
 **What it does:** Black-Scholes price of a European put or call; takes numbers or numpy arrays.
@@ -194,7 +194,7 @@ by mistake looks like a valid 5%. Always divide `B_YLD_1` by 100.
 ---
 
 ### OPT-08  implied_vol
-**File:** src/options/chains.py
+**File:** src/options/greeks.py
 **Status:** ✅ done
 
 **What it does:** Implied vol from an option's price by bisection on OPT-07, for whole arrays at once (one call per panel).
@@ -218,7 +218,7 @@ by mistake looks like a valid 5%. Always divide `B_YLD_1` by 100.
 ---
 
 ### OPT-09  bs_delta_vec
-**File:** src/options/chains.py
+**File:** src/options/greeks.py
 **Status:** ✅ done
 
 **What it does:** OPT-03's Black-Scholes delta on numpy arrays, for whole chains.

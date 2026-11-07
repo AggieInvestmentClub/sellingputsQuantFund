@@ -55,7 +55,7 @@ Starts 1 day before `start` so the first day's return can be computed.
 
 **Example:** `fetch_prices("AAPL.O", "2026-09-01", "2026-10-15")` → 32 daily rows
 
-**Uses:** ING-01 session  **Used by:** smoke_test, depth tests, membership checks; later DAT
+**Uses:** ING-01 session  **Used by:** scripts/build_membership.py, check_membership.py, check_universe.py
 
 **Gotchas:**
 - Prices are **split-adjusted** (good for returns). For the $20 price floor (STR-1.1a) you need
@@ -76,7 +76,7 @@ Starts 1 day before `start` so the first day's return can be computed.
 
 **Returns:** the file path written
 
-**Uses:** —  **Used by:** smoke_test
+**Uses:** —  **Used by:** — (no script uses it now)
 
 ---
 
@@ -133,7 +133,7 @@ sorts oldest to newest.
 
 **Example:** AAPL, Sept 1 – Oct 15 2026 → about 7,000 headlines
 
-**Uses:** ING-05  **Used by:** smoke_test, depth tests; later DAT news cleaning
+**Uses:** ING-05  **Used by:** ING-23 is the per-event version; DAT-08 / DAT-09 clean the output
 
 **Gotchas:**
 - **Most headlines are junk.** Only Reuters (`sourceCode == "NS:RTRS"`) has reliable times.
@@ -164,13 +164,35 @@ Reuters and one event is usually one request.
 
 **Example:** IQV.N, 2025-05-14 → 1 Reuters story (vs 100 headlines from all sources)
 
-**Uses:** ING-05  **Used by:** scripts/download_event_reuters.py
+**Uses:** ING-05  **Used by:** scripts/download_event_news.py
 
 **Gotchas:**
 - Headlines after the decision time are kept on purpose (for later analysis). Filter with DAT-09
   before anything reaches the LLM.
 - A delisted company's base RIC can be reused by a new company later; headlines are from around
   the shock date, so this only matters if the reuse happened within days.
+
+---
+
+### ING-24  fetch_story_text
+**File:** src/ingest/lseg_news.py
+**Status:** ✅ done
+
+**What it does:** Downloads the full text of one story (one LSEG request), strips HTML tags and
+extra spaces. Retries like ING-04 (5s, 10s, 20s).
+
+**Inputs:**
+| name | type | meaning | default |
+|---|---|---|---|
+| story_id | str | `storyId` from ING-06 / ING-23 | — |
+| max_chars | int | cut the text to this length | 8000 |
+
+**Returns:** plain text (`""` if LSEG returns nothing)
+
+**Uses:** ING-01 session  **Used by:** scripts/download_event_news.py (stories picked with DAT-08 / DAT-09 / DAT-10)
+
+**Gotchas:** Fetch the **first version** (`:0`) of a story (DAT-08): later versions can add facts
+that came out after the decision time.
 
 ---
 
@@ -184,7 +206,7 @@ Reuters and one event is usually one request.
 
 **Returns:** the file path written
 
-**Uses:** —  **Used by:** smoke_test
+**Uses:** —  **Used by:** — (no script uses it now)
 
 ---
 

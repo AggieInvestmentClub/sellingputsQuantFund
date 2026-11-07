@@ -54,6 +54,6 @@ What was found in this data:
 - Unique historical RICs: 736; 132 were marked as delisted; snapshot sizes stayed in the normal 500-506 range.
 - The validation script confirmed 138 clean snapshots. The remaining `.SPX` LSEG error should be investigated separately.
 
-`src/ingest has the code that downloads prices and news.
-- scripts/smoke_test is the quick connection test.
-- The other files in scripts are the checks used to understand the data.
+- `src/ingest` has the code that downloads prices and news.
+- `scripts/` has the runnable pipeline steps (downloads, builds, validation); every script says how to run it at the top.
+- `python scripts/download_event_news.py --limit 20` is a quick LSEG connection test (20 events).

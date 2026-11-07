@@ -1,3 +1,4 @@
+import re
 import time
 from pathlib import Path
 import pandas as pd
@@ -84,6 +85,29 @@ def fetch_event_headlines(ric: str, date, days_before: int = 3, days_after: int 
     out["data_available_time"] = out["event_time"]
     out["ric"], out["shock_date"] = ric, day
     return out.drop_duplicates("storyId").sort_values("event_time")[cols].reset_index(drop=True)
+
+
+def fetch_story_text(story_id: str, max_chars: int = 8000) -> str:
+    """
+    [ING-24] full text of one story (one LSEG request), HTML tags and extra spaces removed
+
+    story_id: storyId from ING-06 / ING-23, e.g. "urn:newsml:reuters.com:20250514:nL1N3G4:0"
+    returns plain text cut to max_chars ("" if LSEG returns nothing); retries like ING-04
+    """
+    for attempt in range(4):
+        try:
+            try:
+                raw = ld.news.get_story(story_id, format=ld.news.Format.TEXT)
+            except (AttributeError, TypeError):      # older lseg-data versions have no format option
+                raw = ld.news.get_story(story_id)
+            break
+        except Exception as e:
+            if attempt == 3:
+                raise
+            print(f"  retry {attempt + 1} after {type(e).__name__}, waiting {5 * 2 ** attempt}s")
+            time.sleep(5 * 2 ** attempt)
+    text = re.sub(r"<[^>]+>", " ", str(raw or ""))
+    return re.sub(r"\s+", " ", text).strip()[:max_chars]
 
 
 def save_news(ric: str, df: pd.DataFrame) -> Path:

@@ -34,3 +34,12 @@ def test_before_decision_uses_new_york_close_with_daylight_saving():
 def test_empty_inputs_pass_through():
     empty = pd.DataFrame(columns=["storyId", "event_time"])
     assert first_versions(empty).empty and before_decision(empty, "2025-05-14").empty
+
+
+def test_on_shock_day_runs_from_previous_close():
+    from src.data.news import on_shock_day
+    news = pd.DataFrame({"event_time": pd.to_datetime(
+        ["2025-05-09 19:59", "2025-05-09 20:01", "2025-05-12 19:59", "2025-05-12 20:01"], utc=True),
+        "headline": ["fri before close", "fri after close", "mon before close", "mon after close"]})
+    out = on_shock_day(news, "2025-05-12")                       # Monday: window starts Friday's close
+    assert out["headline"].tolist() == ["fri after close", "mon before close"]

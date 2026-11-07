@@ -1,5 +1,5 @@
 """
-Tests for src/options/chains.py (OPT-05..09) and src/events/option_panel.py (EVT-09..12), made-up data.
+Tests for src/options/chains.py (OPT-05/06), src/options/greeks.py (OPT-07..09) and src/events/option_panel.py (EVT-09..12), made-up data.
 
 Run from the repo root:  python -m pytest tests/test_option_panel.py
 """
@@ -12,8 +12,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.events.option_panel import add_iv_delta, event_windows, root_volume, select_event_puts  # noqa: E402
-from src.options.chains import bs_delta_vec, bs_price, implied_vol, occ_root, parse_occ  # noqa: E402
-from src.options.greeks import bs_delta  # noqa: E402
+from src.options.chains import occ_root, parse_occ  # noqa: E402
+from src.options.greeks import bs_delta, bs_delta_vec, bs_price, implied_vol  # noqa: E402
 
 
 # ---------- OPT-05 / OPT-06 ----------

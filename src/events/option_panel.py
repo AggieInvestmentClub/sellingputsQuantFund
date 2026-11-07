@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 
 from src.data.security_master import massive_ticker_on
-from src.options.chains import bs_delta_vec, implied_vol, occ_root
+from src.options.chains import occ_root
+from src.options.greeks import bs_delta_vec, implied_vol
 
 
 def event_windows(events, tickers, first_day, last_day, max_wait=10, min_dte=14, max_dte=35):

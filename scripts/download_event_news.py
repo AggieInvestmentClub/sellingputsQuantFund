@@ -1,19 +1,25 @@
 """
-Headlines (and a few Reuters story texts) around every shock, as input for the LLM filter (spec 2.3 / 2.4).
+Reuters headlines and story texts around every shock, input for the LLM filter (spec 2.3 / 2.4)
+and the news / no-news test. Needs LSEG Workspace open and data/results/event_study/events.csv.
 
-Window per event: previous trading day 20:00 UTC (US close) .. day +1 21:00 UTC.
-The LLM decision at the shock-day close must only use headlines up to the shock day 21:00 UTC;
-day +1 is kept for the entry-day re-check.
+Per event:
+  1. headlines (ING-23): Reuters only (Source:RTRS in the query), shock day -3 .. +1. One request.
+  2. story texts (ING-24): the first `--stories` Reuters stories that broke between the previous
+     close and the shock-day close (DAT-08 first version, DAT-10 window); if none, the latest ones
+     before the shock-day close (DAT-09). One request per story.
+  Nothing published after the shock-day close (New York time) is fetched as a story text.
 
-Needs LSEG Workspace open, data/results/event_study/events.csv.
-Run from the repo root:  py -3.12 -u scripts/download_event_news.py [--since 2024-04-01] [--stories 2]
-  --since    first shock date to fetch (default: start of the options data, 2024-04-01)
-  --stories  Reuters story texts per event (0 = headlines only); each text is one extra request
-Writes data/raw/news/events/<event>.parquet (headlines), data/raw/news/stories/<event>.parquet
-(story texts), and data/raw/news/event_news_summary.csv. Resumable: finished events are skipped.
+Run from the repo root:
+    python -u scripts/download_event_news.py --start 2024-04-08 --end 2026-09-15
+    python -u scripts/download_event_news.py --limit 20              (smoke test)
+    python -u scripts/download_event_news.py --stories 0             (headlines only)
+Writes, one file per event (<RIC>_<YYYYMMDD>.parquet):
+    data/raw/news/reuters_events/   headlines (empty file if no Reuters story)
+    data/raw/news/reuters_stories/  story texts: ric, shock_date, storyId, event_time, headline, text
+    data/raw/news/reuters_events/manifest.csv (+ failures.csv)
+Safe to re-run: finished files are skipped; stops cleanly at --budget requests.
 """
 import argparse
-import re
 import sys
 import time
 from pathlib import Path
@@ -22,100 +28,108 @@ sys.path.insert(0, ".")
 import lseg.data as ld
 import pandas as pd
 
+from src.data.news import before_decision, first_versions, on_shock_day
 from src.ingest.lseg_client import lseg_session
-from src.ingest.lseg_news import fetch_headlines
+from src.ingest.lseg_news import fetch_event_headlines, fetch_story_text
 
-ap = argparse.ArgumentParser()
-ap.add_argument("--since", default="2024-04-01")
-ap.add_argument("--stories", type=int, default=2)
-ap.add_argument("--budget", type=int, default=6000, help="stop after this many LSEG requests")
-args = ap.parse_args()
+HEAD = Path("data/raw/news/reuters_events")
+STORY = Path("data/raw/news/reuters_stories")
+STORY_COLS = ["ric", "shock_date", "storyId", "event_time", "headline", "text"]
 
-HEAD = Path("data/raw/news/events")
-STORY = Path("data/raw/news/stories")
+parser = argparse.ArgumentParser()
+parser.add_argument("--start", default="2024-04-08")
+parser.add_argument("--end", default="2026-09-15")
+parser.add_argument("--stories", type=int, default=2, help="story texts per event (0 = headlines only)")
+parser.add_argument("--budget", type=int, default=6000, help="max LSEG news requests this run")
+parser.add_argument("--limit", type=int, default=None, help="only the first N events (smoke test)")
+args = parser.parse_args()
+
+
+class Budget(BaseException):
+    # BaseException so the retry loops in ING-04 / ING-24 can't swallow it
+    pass
+
+
+calls = {"n": 0}
+
+
+def counted(fn):
+    def wrapper(*a, **k):
+        if calls["n"] >= args.budget:
+            raise Budget()
+        calls["n"] += 1
+        return fn(*a, **k)
+    return wrapper
+
+
+ld.news.get_headlines = counted(ld.news.get_headlines)
+ld.news.get_story = counted(ld.news.get_story)
+
+
+def log(msg):
+    print(f"{time.strftime('%H:%M:%S')} [{calls['n']:5d} req] {msg}", flush=True)
+
+
+def name(ric, date):
+    return f"{ric.replace('.', '_').replace('^', '~')}_{date:%Y%m%d}.parquet"
+
+
+def pick_stories(headlines, date, n):
+    """first versions; shock-day stories first, else the latest ones before the close"""
+    stories = before_decision(first_versions(headlines), date)
+    day = on_shock_day(stories, date)
+    return day.head(n) if len(day) else stories.tail(n)
+
+
+events = pd.read_csv("data/results/event_study/events.csv", parse_dates=["date"])
+events = events[(events["date"] >= args.start) & (events["date"] <= args.end)].sort_values("date")
+if args.limit:
+    events = events.head(args.limit)
 for p in (HEAD, STORY):
     p.mkdir(parents=True, exist_ok=True)
 
-events = pd.read_csv("data/results/event_study/events.csv", parse_dates=["date"])
-events = events[events["date"] >= pd.Timestamp(args.since)].sort_values("date").reset_index(drop=True)
-bday = pd.offsets.BDay
-
-
-def safe(event_id):
-    return event_id.replace(".", "_").replace("^", "~").replace("|", "__")
-
-
-def story_text(story_id):
-    try:
-        raw = ld.news.get_story(story_id, format=ld.news.Format.TEXT)
-    except (AttributeError, TypeError):
-        raw = ld.news.get_story(story_id)
-    text = re.sub(r"<[^>]+>", " ", str(raw or ""))
-    return re.sub(r"\s+", " ", text).strip()[:8000]
-
-
-requests_used, t0, rows = 0, time.time(), []
+failed = []
 with lseg_session():
-    for i, ev in events.iterrows():
-        event_id = f"{ev['ric']}|{ev['date']:%Y-%m-%d}"
-        h_path, s_path = HEAD / f"{safe(event_id)}.parquet", STORY / f"{safe(event_id)}.parquet"
-        if h_path.exists() and (args.stories == 0 or s_path.exists()):
-            continue
-        if requests_used >= args.budget:
-            print(f"STOPPED: request budget {args.budget} used; re-run tomorrow to continue")
-            break
-        start = (ev["date"] - bday(1)).strftime("%Y-%m-%dT20:00:00")
-        end = (ev["date"] + bday(1)).strftime("%Y-%m-%dT21:00:00")
-        try:
-            h = fetch_headlines(ev["ric"], start, end, window_days=7)
-            requests_used += 1
-        except Exception as e:
-            print(f"  {event_id}: headlines failed ({type(e).__name__}: {str(e)[:80]})")
-            requests_used += 1
-            continue
-        if h.empty:
-            h = pd.DataFrame(columns=["event_time", "headline", "storyId", "sourceCode", "ric"])
-        h = h.assign(event_id=event_id,
-                     before_decision=pd.to_datetime(h["event_time"], utc=True)
-                     <= pd.Timestamp(ev["date"].strftime("%Y-%m-%dT21:00:00"), tz="UTC"))
-        h.to_parquet(h_path, index=False)
-
-        reuters = h[(h["sourceCode"] == "NS:RTRS") & h["before_decision"]]
-        reuters = reuters[~reuters["storyId"].astype(str).str.contains(r":\d+$") |
-                          reuters["storyId"].astype(str).str.endswith(":1")]       # first version only
-        texts = []
-        for sid, head in reuters[["storyId", "headline"]].head(args.stories).itertuples(index=False):
+    try:
+        log(f"start: {len(events)} events {args.start}..{args.end}, {args.stories} stories each, "
+            f"budget {args.budget}")
+        for i, e in enumerate(events.itertuples(), 1):
+            h_path, s_path = HEAD / name(e.ric, e.date), STORY / name(e.ric, e.date)
             try:
-                texts.append({"event_id": event_id, "storyId": sid, "headline": head, "text": story_text(sid)})
-            except Exception as e:
-                texts.append({"event_id": event_id, "storyId": sid, "headline": head, "text": f"FAILED {type(e).__name__}"})
-            requests_used += 1
-        if args.stories:
-            pd.DataFrame(texts, columns=["event_id", "storyId", "headline", "text"]).to_parquet(s_path, index=False)
-        rows.append({"event_id": event_id, "headlines": len(h), "before_decision": int(h["before_decision"].sum()),
-                     "reuters_before_decision": len(reuters), "stories": len(texts)})
-        if (i + 1) % 50 == 0:
-            el = time.time() - t0
-            print(f"  {i + 1}/{len(events)} events | {requests_used} requests | {el / 60:.0f} min")
+                if not h_path.exists():
+                    fetch_event_headlines(e.ric, e.date).to_parquet(h_path, index=False)
+                if args.stories and not s_path.exists():
+                    pick = pick_stories(pd.read_parquet(h_path), e.date, args.stories)
+                    rows = [{"ric": e.ric, "shock_date": e.date, "storyId": s.storyId,
+                             "event_time": s.event_time, "headline": s.headline,
+                             "text": fetch_story_text(s.storyId)} for s in pick.itertuples()]
+                    pd.DataFrame(rows, columns=STORY_COLS).to_parquet(s_path, index=False)
+            except Budget:
+                raise
+            except Exception as ex:
+                failed.append((e.ric, e.date.date(), f"{type(ex).__name__}: {str(ex)[:80]}"))
+            if i % 100 == 0:
+                log(f"events {i}/{len(events)}")
+        log("all events done")
+    except Budget:
+        log(f"STOPPED: budget of {args.budget} requests reached. Re-run to continue.")
 
-# summary over everything on disk (this run and earlier ones)
-summ = []
-for ev in events.itertuples():
-    event_id = f"{ev.ric}|{ev.date:%Y-%m-%d}"
-    p = HEAD / f"{safe(event_id)}.parquet"
-    if not p.exists():
-        summ.append({"event_id": event_id, "fetched": False})
+rows = []
+for e in events.itertuples():
+    h_path, s_path = HEAD / name(e.ric, e.date), STORY / name(e.ric, e.date)
+    if not h_path.exists():
         continue
-    h = pd.read_parquet(p)
-    summ.append({"event_id": event_id, "fetched": True, "headlines": len(h),
-                 "before_decision": int(h["before_decision"].sum()),
-                 "reuters_before_decision": int(((h["sourceCode"] == "NS:RTRS") & h["before_decision"]).sum())})
-s = pd.DataFrame(summ)
-s.to_csv("data/raw/news/event_news_summary.csv", index=False)
-f = s[s["fetched"]]
-print(f"\nevents since {args.since}: {len(s)} | fetched: {len(f)} | requests this run: {requests_used}")
-if len(f):
-    print(f"  with any headline before the decision:  {(f['before_decision'] > 0).mean():.0%}")
-    print(f"  with a Reuters headline before it:      {(f['reuters_before_decision'] > 0).mean():.0%}")
-    print(f"  median headlines before the decision:   {f['before_decision'].median():.0f}")
-print("saved data/raw/news/events/, data/raw/news/stories/, data/raw/news/event_news_summary.csv")
+    stories = before_decision(first_versions(pd.read_parquet(h_path)), e.date)
+    texts = pd.read_parquet(s_path) if s_path.exists() else pd.DataFrame(columns=STORY_COLS)
+    rows.append({"ric": e.ric, "date": e.date.date(), "stories_before_close": len(stories),
+                 "stories_on_shock_day": len(on_shock_day(stories, e.date)),
+                 "texts": len(texts), "texts_nonempty": int((texts["text"].str.len() > 0).sum())})
+man = pd.DataFrame(rows)
+man.to_csv(HEAD / "manifest.csv", index=False)
+(HEAD / "failures.csv").unlink(missing_ok=True)        # only this run's failures
+if failed:
+    pd.DataFrame(failed, columns=["ric", "date", "error"]).to_csv(HEAD / "failures.csv", index=False)
+if len(man):
+    log(f"{len(man)} events | Reuters story before the close: {(man.stories_before_close > 0).mean():.0%} | "
+        f"on the shock day: {(man.stories_on_shock_day > 0).mean():.0%} | "
+        f"with story text: {(man.texts_nonempty > 0).mean():.0%} | failed: {len(failed)}")
