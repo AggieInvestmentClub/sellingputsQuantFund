@@ -1,0 +1,35 @@
+walk-forward: 7 folds, train 4 quarters (rolling), score mean_ror, 284 candidates, pricer=panel
+
+stitched out-of-sample (chosen each quarter):
+n                 71.0000
+n_dates           58.0000
+win_rate           0.8451
+mean_ror           0.0064
+median_ror         0.1075
+sum_ror            0.4553
+worst5_ror        -0.8557
+max_loss_share     0.0563
+t_by_date          0.4218
+avg_days          12.0704
+
+always baseline (baseline | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0) over the same quarters:
+n                 177.0000
+n_dates           118.0000
+win_rate            0.7401
+mean_ror           -0.0204
+median_ror          0.0973
+sum_ror            -3.6050
+worst5_ror         -0.4974
+max_loss_share      0.0056
+t_by_date          -1.2059
+avg_days            9.9209
+
+how often each candidate was chosen:
+chosen
+width_pct=0.025 | event_set=nj_opus category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0           1
+width_pct=0.075 | event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0          1
+stop_rules=[] | event_set=nj_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0             1
+stop_rules=[] | event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0            1
+min_credit_pct=0.15 | event_set=not_j_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0    1
+stop_rules=[] | event_set=nj_opus category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0             1
+min_credit_pct=0.15 | event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0      1

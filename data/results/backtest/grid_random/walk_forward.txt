@@ -1,0 +1,32 @@
+walk-forward: 7 folds, train 4 quarters (rolling), score mean_ror, 145 candidates, pricer=panel
+
+stitched out-of-sample (chosen each quarter):
+n                 54.0000
+n_dates           50.0000
+win_rate           0.9259
+mean_ror           0.0429
+median_ror         0.0969
+sum_ror            2.3188
+worst5_ror        -0.3743
+max_loss_share     0.0370
+t_by_date          1.4524
+avg_days          13.2407
+
+always baseline (baseline | event_set=all category=any min_ratio=None max_shock=1.0 mcap_floor=5000000000.0) over the same quarters:
+n                 302.0000
+n_dates           179.0000
+win_rate            0.9205
+mean_ror            0.0575
+median_ror          0.1066
+sum_ror            17.3653
+worst5_ror         -0.3170
+max_loss_share      0.0298
+t_by_date           3.5483
+avg_days           13.3113
+
+how often each candidate was chosen:
+chosen
+short_delta=0.15 width_pct=0.025 target_dte=35 max_wait=2 | event_set=all category=any min_ratio=None max_shock=1.0 mcap_floor=5000000000.0    3
+short_delta=0.15 width_pct=0.05 target_dte=14 max_wait=1 | event_set=all category=any min_ratio=None max_shock=1.0 mcap_floor=5000000000.0     2
+short_delta=0.15 width_pct=0.025 target_dte=28 max_wait=1 | event_set=all category=any min_ratio=None max_shock=1.0 mcap_floor=5000000000.0    1
+short_delta=0.15 width_pct=0.1 target_dte=14 max_wait=3 | event_set=all category=any min_ratio=None max_shock=1.0 mcap_floor=5000000000.0      1

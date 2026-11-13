@@ -1,0 +1,35 @@
+walk-forward: 7 folds, train 4 quarters (rolling), score mean_ror, 388 candidates, pricer=panel
+
+stitched out-of-sample (chosen each quarter):
+n                 61.0000
+n_dates           56.0000
+win_rate           0.7213
+mean_ror          -0.0285
+median_ror         0.0898
+sum_ror           -1.7380
+worst5_ror        -0.4885
+max_loss_share     0.0000
+t_by_date         -0.7118
+avg_days          11.3934
+
+always baseline (baseline | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0) over the same quarters:
+n                 177.0000
+n_dates           118.0000
+win_rate            0.7401
+mean_ror           -0.0204
+median_ror          0.0973
+sum_ror            -3.6050
+worst5_ror         -0.4974
+max_loss_share      0.0056
+t_by_date          -1.2059
+avg_days            9.9209
+
+how often each candidate was chosen:
+chosen
+short_delta=0.2 width_pct=0.025 target_dte=21 | event_set=nj_opus category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0      1
+short_delta=0.2 width_pct=0.075 target_dte=21 | event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0     1
+short_delta=0.2 width_pct=0.1 target_dte=21 | event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0       1
+short_delta=0.15 width_pct=0.025 target_dte=14 | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0         1
+short_delta=0.15 width_pct=0.025 target_dte=28 | event_set=has_news category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0    1
+short_delta=0.15 width_pct=0.1 target_dte=35 | event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0      1
+short_delta=0.15 width_pct=0.1 target_dte=14 | event_set=has_news category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0      1

@@ -1,0 +1,44 @@
+walk-forward: 43 folds, train 4 quarters (rolling), score mean_ror, 248 candidates, pricer=proxy
+
+stitched out-of-sample (chosen each quarter):
+n                 1518.0000
+n_dates            879.0000
+win_rate             0.8821
+mean_ror             0.0408
+median_ror           0.1004
+sum_ror             61.8703
+worst5_ror          -0.3704
+max_loss_share       0.0158
+t_by_date            4.4880
+avg_days            15.5837
+
+always baseline (baseline | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0) over the same quarters:
+n                 2245.0000
+n_dates           1119.0000
+win_rate             0.8147
+mean_ror             0.0110
+median_ror           0.0981
+sum_ror             24.7235
+worst5_ror          -0.4392
+max_loss_share       0.0049
+t_by_date            1.0377
+avg_days            14.4352
+
+how often each candidate was chosen:
+chosen
+width_pct=0.1 | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0         17
+stop_rules=[] | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0          9
+tp_mode=hold | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0           4
+short_delta=0.15 | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0       3
+width_pct=0.075 | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0        1
+target_dte=14 | event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0          1
+width_pct=0.1 | event_set=nj_opus category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0      1
+stop_rules=[] | event_set=j_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0       1
+width_pct=0.025 | event_set=j_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0     1
+width_pct=0.1 | event_set=nj_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0      1
+stop_rules=[] | event_set=nj_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0      1
+stop_rules=[] | event_set=has_news category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0     1
+width_pct=0.1 | event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0     1
+width_pct=0.1 | event_set=has_news category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0     1
+
+PROXY PRICES (Black-Scholes from pre-shock realized vol): checks the code, not the strategy.

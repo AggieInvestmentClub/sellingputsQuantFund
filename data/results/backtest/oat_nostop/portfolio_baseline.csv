@@ -1,0 +1,9 @@
+filter,total_return,max_drawdown,sharpe,n_taken,n_blocked
+event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,0.00418350286622915,-0.057526559034675406,0.03118854277434107,151,63
+event_set=has_news category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,0.06433306586696208,-0.05358487998183403,0.5694638721221146,133,28
+event_set=j_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,0.009865743242515101,0.0,1.6463747569693699,4,0
+event_set=nj_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,0.048026438157734,-0.0437142348099917,0.5531305054388137,79,10
+event_set=nj_both_samecat category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,0.018186486133284552,-0.054356260256456235,0.22190433872086812,51,2
+event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,0.05062237378877055,-0.06051785272643062,0.5119440358977282,102,17
+event_set=nj_opus category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,0.044525978860386006,-0.04207785129752073,0.45608012120621183,99,18
+event_set=not_j_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.0149326801848233,-0.07178840802455455,-0.10345891813066338,147,63

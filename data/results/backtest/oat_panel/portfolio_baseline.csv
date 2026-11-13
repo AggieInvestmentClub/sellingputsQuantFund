@@ -1,0 +1,9 @@
+filter,total_return,max_drawdown,sharpe,n_taken,n_blocked
+event_set=all category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.2586212058796441,-0.2602931130140176,-1.4592919671684246,338,198
+event_set=has_news category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.12851651430938826,-0.18499876385666314,-0.8123023901344271,283,120
+event_set=j_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.030141128018214336,-0.034406903107675135,-0.7834017898712978,21,0
+event_set=nj_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.13853300500189014,-0.18357099383503073,-1.1665286005211455,149,46
+event_set=nj_both_samecat category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.16683315832011236,-0.19996629864154924,-1.4707756415681066,108,12
+event_set=nj_gpt4o category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.1511331542966481,-0.20800797130680482,-1.1313036699425867,210,75
+event_set=nj_opus category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.09754081112444635,-0.16489290159711056,-0.8050464066331293,181,70
+event_set=not_j_both category=any min_ratio=None max_shock=-0.05 mcap_floor=5000000000.0,-0.24908995016753177,-0.2612700459471241,-1.4018276528336246,322,193

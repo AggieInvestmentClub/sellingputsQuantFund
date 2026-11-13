@@ -1,0 +1,26 @@
+label,earnings in window,no data after shock,no entry signal,open at end of data,price below floor,traded
+baseline,109,13,1096,9,57,215
+fixed_target=0.75,109,13,1096,9,57,215
+iv_rv_min=1.2,131,9,1007,16,57,279
+iv_rv_min=2.0,68,16,1199,4,57,155
+long_delta=0.05,109,13,1096,9,57,215
+long_method=delta,110,13,1083,9,57,227
+max_volume_mult=2.0,119,13,1076,9,57,225
+max_volume_mult=None,123,13,1058,9,57,239
+max_wait=1,32,3,1328,1,57,78
+max_wait=2,74,10,1183,9,57,166
+min_credit_pct=0.15,42,18,1300,2,57,80
+min_credit_pct=0.2,5,18,1398,1,57,20
+min_credit_pct=0.25,0,18,1418,0,57,6
+min_credit_pct=0.33,0,18,1423,0,57,1
+outpace_margin=0.1,109,13,1096,9,57,215
+outpace_margin=0.3,109,13,1096,9,57,215
+short_delta=0.15,69,16,1241,5,57,111
+short_delta=0.25,122,12,1026,11,57,271
+target_dte=14,95,13,1105,6,57,223
+target_dte=28,130,13,1094,10,57,195
+target_dte=35,134,13,1087,11,57,197
+tp_mode=fixed,109,13,1096,9,57,215
+width_pct=0.025,97,12,1110,10,57,213
+width_pct=0.075,106,13,1115,9,57,199
+width_pct=0.1,96,12,1153,10,57,171

@@ -1,0 +1,2 @@
+filter,total_return,max_drawdown,sharpe,n_taken,n_blocked
+event_set=all category=any min_ratio=None max_shock=1.0 mcap_floor=5000000000.0,0.17810499380810496,-0.054409065014316305,1.1124182761369716,287,191
