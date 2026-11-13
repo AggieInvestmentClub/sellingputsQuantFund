@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shock Strategy Results</title>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<style>
+:root{color-scheme:light;--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;
+--grid:#e1e0d9;--axis:#c3c2b7;--border:rgba(11,11,11,.10);--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;
+--neg:#e34948;--pos:#2a78d6;--mid:#f0efec;--tag:#eef3fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;
+--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--neg:#e66767;--pos:#3987e5;--mid:#383835;--tag:#1d2a3d}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;
+--grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;
+--neg:#e66767;--pos:#3987e5;--mid:#383835;--tag:#1d2a3d}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:28px;margin:0 0 4px}h2{font-size:19px;margin:36px 0 10px}h3{font-size:15px;margin:0 0 2px}
+.sub{color:var(--ink2);margin:0 0 12px}.note{color:var(--ink2);font-size:13px;margin:2px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;min-width:0}
+.wide{margin-bottom:16px}
+.chart{width:100%;height:340px}.tall{height:440px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0 8px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.tile .k{color:var(--ink2);font-size:13px}.tile .v{font-size:24px;font-weight:600}.tile .d{color:var(--muted);font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+a.lk{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--ink);text-decoration:none}
+a.lk:hover{border-color:var(--s1)}a.lk b{color:var(--s1)}a.lk span{display:block;color:var(--ink2);font-size:13px}
+nav{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin:4px 0 8px}nav a{color:var(--s1)}
+</style></head><body><main>
+<h1>Shock strategy: results</h1>
+<p class="sub">Bull put spreads after one-day drops of 5%+ (abnormal, $5B+ market cap), real OPRA option prices, 2024-04 to 2026-11.
+Return on risk = P&amp;L ÷ the spread's max loss. Candidate setting: <b>__CAND__</b>, no stop-loss.</p>
+<nav><a href="#book">Book vs SPY</a><a href="#edge">Is the shock an edge?</a><a href="#rules">What each rule does</a><a href="#llm">LLM filters</a><a href="#reports">Full reports</a></nav>
+<div id="tiles"></div>
+
+<h2 id="book">Book vs SPY</h2>
+<div class="card wide"><h3>Cumulative return: $100k book, 2% of capital risked per trade</h3>
+<p class="note">The book is mostly in cash, so compare drawdown and smoothness with SPY, not only the end value.</p>
+<div id="c_eq" class="chart tall"></div></div>
+<div class="card wide"><h3>Every setting with 30+ trades: return vs worst drawdown</h3>
+<p class="note">Up and to the right is better. Blue = 0.15 short delta, orange = 0.20, green = 0.25. Hover for the setting.</p>
+<div id="c_sc" class="chart"></div></div>
+
+<h2 id="edge">Is the shock an edge? Shocks vs random no-shock days, same rules</h2>
+<div class="grid">
+<div class="card"><h3>Mean return on risk by short delta</h3><p class="note">Median over the grid settings with that delta.</p><div id="c_delta" class="chart"></div></div>
+<div class="card"><h3>Baseline, step by step</h3><p class="note">Each change applied to the 0.20-delta baseline. The last bar is the random-day control.</p><div id="c_steps" class="chart"></div></div>
+</div>
+<div class="grid" style="margin-top:16px">
+<div class="card"><h3>Shocks: mean return on risk, delta × width</h3><p class="note">Wait ≤ 3 days, no stop, average over DTE 14-35.</p><div id="c_hs" class="chart"></div></div>
+<div class="card"><h3>Random days: same settings</h3><p class="note">Same color scale. Blue = profit, red = loss.</p><div id="c_hr" class="chart"></div></div>
+</div>
+
+<h2 id="rules">What each rule does</h2>
+<div class="grid">
+<div class="card"><h3>Entry day after the shock (old run, wait up to 10 days)</h3><p class="note">Later entries lose: the stock is still falling and the vol premium has faded.</p><div id="c_entry" class="chart"></div></div>
+<div class="card"><h3>Stop-loss rules (wait ≤ 3 days)</h3><p class="note">No stop beats every stop: the spread's max loss is already the cap.</p><div id="c_stops" class="chart"></div></div>
+</div>
+
+<h2 id="llm">LLM filters</h2>
+<div class="card wide"><h3>Event sets, 0.15-delta settings with wait ≤ 3 (median over settings)</h3>
+<p class="note">"Not justified" filters raise the mean a little but halve the trades; none clearly beats "has news". Hover for trade counts.</p>
+<div id="c_sets" class="chart"></div></div>
+
+<h2 id="reports">Full reports</h2>
+<div class="cards">
+<a class="lk" href="grid_random/vs_real.html"><b>Shocks vs random entries</b><span>Every setting, table with t-statistics</span></a>
+<a class="lk" href="vs_spy.html"><b>Strategy vs SPY: all events</b><span>170 settings as books vs SPY</span></a>
+<a class="lk" href="vs_spy_news.html"><b>Strategy vs SPY: events with news</b><span>Same, Reuters headline before the close</span></a>
+<a class="lk" href="grid_nostop/report.html"><b>Grid, no stop-loss</b><span>Delta × width × DTE × wait, walk-forward</span></a>
+<a class="lk" href="oat_nostop/report.html"><b>One change at a time, no stop</b><span>Each parameter alone</span></a>
+<a class="lk" href="grid_random/report.html"><b>Random entries: full report</b><span>The control grid on its own</span></a>
+<a class="lk" href="oat_panel_w3/report.html"><b>One at a time, wait ≤ 3, 2× stop</b><span>Earlier run</span></a>
+<a class="lk" href="grid_panel_w3/report.html"><b>Grid, wait ≤ 3, 2× stop</b><span>Earlier run</span></a>
+<a class="lk" href="oat_panel/report.html"><b>One at a time, wait ≤ 10</b><span>First real-price run, LLM label comparison</span></a>
+<a class="lk" href="grid_panel/report.html"><b>Grid, wait ≤ 10</b><span>First real-price grid</span></a>
+<a class="lk" href="oat_proxy/report.html"><b>Proxy prices 2015-2026</b><span>Black-Scholes stand-in: checks the code only</span></a>
+</div>
+</main>
+<script>
+const D = __DATA__;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const pct = (x, d=1) => x==null ? "–" : (x*100).toFixed(d) + "%";
+const spct = (x, d=1) => x==null ? "–" : (x>0?"+":"") + (x*100).toFixed(d) + "%";
+function layout(extra={}) {
+  const ax = {gridcolor: css('--grid'), linecolor: css('--axis'), zerolinecolor: css('--axis'), tickfont:{color: css('--muted')},
+              title:{font:{color: css('--ink2'), size:13}}, automargin:true};
+  return Object.assign({paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)', font:{family:'system-ui,-apple-system,"Segoe UI",sans-serif', color: css('--ink'), size:12},
+    margin:{l:10,r:10,t:10,b:10}, xaxis:Object.assign({}, ax, extra.xaxis||{}), yaxis:Object.assign({}, ax, extra.yaxis||{}),
+    legend:{orientation:'h', y:1.12, x:0, font:{color: css('--ink2')}}, hoverlabel:{bgcolor: css('--surface'), bordercolor: css('--axis'), font:{color: css('--ink')}},
+    bargap:0.3}, Object.fromEntries(Object.entries(extra).filter(([k])=>!['xaxis','yaxis'].includes(k))));
+}
+const CFG = {displayModeBar:false, responsive:true};
+const sign = v => v < 0 ? css('--neg') : css('--pos');
+const pad = vals => { const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals), w = (hi - lo) * 0.22; return [lo - (lo < 0 ? w : 0), hi + (hi > 0 ? w : 0)]; };
+const T = D.tiles;
+document.getElementById('tiles').innerHTML = '<div class="tiles">' + [
+  ['Candidate, shocks', spct(T.cand_shock), `mean return on risk · ${T.cand_n} trades`],
+  ['Candidate, random days', spct(T.cand_random), 'same rules, no shock'],
+  ['Settings where shocks beat random', `${T.beat} of ${T.n_settings}`, 'grid, no stop, wait 1-3'],
+  ['Candidate book', spct(T.cand_book), `worst drawdown ${pct(T.cand_dd)}`],
+  ['SPY', spct(T.spy), 'buy and hold, same dates']]
+  .map(([k, v, d]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('') + '</div>';
+
+function draw() {
+  const C = D.curves, ccol = {'Candidate on shocks': css('--s1'), 'Candidate on random days': css('--s2'),
+    'Baseline on shocks (0.20 delta)': css('--s4'), 'SPY buy and hold': css('--s3')};
+  Plotly.react('c_eq', Object.keys(C).map(n => ({type:'scatter', mode:'lines', name:`${n} (${spct(C[n].total_return)})`, x:C[n].x, y:C[n].y,
+     line:{color:ccol[n], width:2}, hovertemplate:n + '<br>%{x}: %{y:.1%}<extra></extra>'})),
+     layout({yaxis:{tickformat:'.0%', zeroline:true}, hovermode:'x unified'}), CFG);
+
+  const S = D.scatter.settings, dcol = s => s.includes('short_delta=0.15') ? css('--s1') : s.includes('short_delta=0.25') ? css('--s3') : css('--s2');
+  Plotly.react('c_sc', [
+    {type:'scatter', mode:'markers', x:S.map(r => r.max_drawdown), y:S.map(r => r.total_return), customdata:S.map(r => [r.setting.replace(/^\w+_nostop: /, ''), r.sharpe, r.n_taken]),
+     marker:{size:8, color:S.map(r => dcol(r.setting)), line:{color:css('--surface'), width:2}}, showlegend:false,
+     hovertemplate:'%{customdata[0]}<br>return %{y:.1%} · drawdown %{x:.1%}<br>Sharpe %{customdata[1]:.2f} · %{customdata[2]} trades<extra></extra>'},
+    {type:'scatter', mode:'markers+text', x:[D.scatter.spy.max_drawdown], y:[D.scatter.spy.total_return], text:['SPY'], textposition:'top center',
+     textfont:{color:css('--ink2')}, marker:{size:14, symbol:'diamond', color:css('--ink2'), line:{color:css('--surface'), width:2}}, showlegend:false,
+     hovertemplate:'SPY<br>return %{y:.1%} · drawdown %{x:.1%}<extra></extra>'}],
+    layout({xaxis:{title:{text:'worst drawdown'}, tickformat:'.0%'}, yaxis:{title:{text:'book total return'}, tickformat:'.0%', zeroline:true}}), CFG);
+
+  const d = D.delta;
+  Plotly.react('c_delta', [
+    {type:'bar', name:'Shocks', x:d.x, y:d.shock, marker:{color:css('--s1')}, text:d.shock.map(v => spct(v)), textposition:'outside', cliponaxis:false,
+     hovertemplate:'delta %{x}<br>shocks %{y:.1%}<extra></extra>'},
+    {type:'bar', name:'Random days', x:d.x, y:d.random, marker:{color:css('--s2')}, text:d.random.map(v => spct(v)), textposition:'outside', cliponaxis:false,
+     hovertemplate:'delta %{x}<br>random %{y:.1%}<extra></extra>'}],
+    layout({barmode:'group', xaxis:{title:{text:'short put delta'}, type:'category'}, yaxis:{tickformat:'.0%', zeroline:true}}), CFG);
+
+  const st = D.steps;
+  Plotly.react('c_steps', [{type:'bar', orientation:'h', y:st.map(r => r.name), x:st.map(r => r.mean),
+     marker:{color:st.map((r, i) => i === st.length - 1 ? css('--s2') : sign(r.mean))}, text:st.map(r => spct(r.mean)), textposition:'outside', cliponaxis:false,
+     customdata:st.map(r => r.n), hovertemplate:'%{y}<br>%{x:.1%} · %{customdata} trades<extra></extra>'}],
+     layout({xaxis:{tickformat:'.0%', zeroline:true, range:pad(st.map(r => r.mean))}, yaxis:{autorange:'reversed'}}), CFG);
+
+  const lim = 0.08, dv = [[0, css('--neg')], [0.5, css('--mid')], [1, css('--pos')]];
+  for (const [id, h] of [['c_hs', D.heat.shock], ['c_hr', D.heat.random]])
+    Plotly.react(id, [{type:'heatmap', x:h.x, y:h.y, z:h.z, zmin:-lim, zmax:lim, colorscale:dv, xgap:2, ygap:2,
+      text:h.z.map(r => r.map(v => spct(v))), texttemplate:'%{text}', textfont:{size:13},
+      colorbar:{tickformat:'.0%', outlinewidth:0, tickfont:{color:css('--muted')}},
+      hovertemplate:'delta %{y} · width %{x}<br>%{z:.1%}<extra></extra>'}],
+      layout({xaxis:{title:{text:'spread width (% of stock)'}, type:'category'}, yaxis:{title:{text:'short delta'}, type:'category'}}), CFG);
+
+  const e = D.entry;
+  Plotly.react('c_entry', [{type:'bar', x:e.x, y:e.y, marker:{color:e.y.map(sign)}, customdata:e.n,
+     hovertemplate:'day %{x}<br>%{y:.1%} · %{customdata} trades<extra></extra>'}],
+     layout({xaxis:{title:{text:'trading days after the shock'}, type:'category'}, yaxis:{tickformat:'.0%', zeroline:true}}), CFG);
+
+  const s = [...D.stops].sort((a, b) => b.mean - a.mean);
+  Plotly.react('c_stops', [{type:'bar', orientation:'h', y:s.map(r => r.name), x:s.map(r => r.mean), marker:{color:s.map(r => sign(r.mean))},
+     text:s.map(r => spct(r.mean)), textposition:'outside', cliponaxis:false, customdata:s.map(r => [r.n, r.win]),
+     hovertemplate:'%{y}<br>%{x:.1%} · win %{customdata[1]:.0%} · %{customdata[0]} trades<extra></extra>'}],
+     layout({xaxis:{tickformat:'.0%', zeroline:true, range:pad(s.map(r => r.mean))}, yaxis:{autorange:'reversed'}}), CFG);
+
+  const v = D.sets;
+  Plotly.react('c_sets', [{type:'bar', x:v.map(r => r.name), y:v.map(r => r.mean), marker:{color:css('--s1')},
+     text:v.map(r => `${spct(r.mean)} · n ${Math.round(r.n)}`), textposition:'outside', cliponaxis:false, customdata:v.map(r => r.n),
+     hovertemplate:'%{x}<br>median %{y:.1%} · median %{customdata:.0f} trades per setting<extra></extra>'}],
+     layout({xaxis:{type:'category'}, yaxis:{tickformat:'.0%', rangemode:'tozero'}}), CFG);
+}
+draw();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+</script></body></html>

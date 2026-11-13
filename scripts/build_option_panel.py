@@ -10,9 +10,11 @@ Needs:
   data/raw/corporate_actions/dividends.parquet              (scripts/overnight.py)
 
 Run from the repo root:  py -3.12 -u scripts/build_option_panel.py
+    random-entry control:  ... --events data/results/event_study/random_events.csv --out data/processed/options_random
 Writes data/processed/options/: event_windows.parquet, event_puts.parquet, root_volume.parquet,
 coverage.txt. Resumable: each finished month is cached in data/processed/options/_months/.
 """
+import argparse
 import sys
 import time
 from pathlib import Path
@@ -24,9 +26,14 @@ import pandas as pd
 from src.events.option_panel import add_iv_delta, event_windows, root_volume, select_event_puts
 from src.options.chains import parse_occ
 
+ap = argparse.ArgumentParser()
+ap.add_argument("--events", default="data/results/event_study/events.csv")
+ap.add_argument("--out", default="data/processed/options")
+args = ap.parse_args()
+
 FLAT = Path("data/raw/options/day_aggs_v1")
 RAW = Path("data/raw")
-OUT = Path("data/processed/options")
+OUT = Path(args.out)
 MONTHS = OUT / "_months"
 MONTHS.mkdir(parents=True, exist_ok=True)
 
@@ -42,7 +49,7 @@ day_of = {f: pd.Timestamp(f.name[:10]) for f in files}
 first, last = min(day_of.values()), max(day_of.values())
 print(f"flat files: {len(files)} days, {first.date()} .. {last.date()}")
 
-events = pd.read_csv("data/results/event_study/events.csv", parse_dates=["date"])
+events = pd.read_csv(args.events, parse_dates=["date"])
 tickers = pd.read_parquet(RAW / "universe" / "massive_tickers.parquet")
 windows = event_windows(events, tickers, first, last)
 windows.to_parquet(OUT / "event_windows.parquet", index=False)

@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CODE_FILES = sorted([*(ROOT / "strategy").rglob("*.py"), *(ROOT / "src").rglob("*.py")])
 DOCS_DIR = ROOT / "docs" / "code_reference"
 
-ID = r"(?:ING|DAT|OPT|STR|EVT|BT|LIVE)-\d+(?:\.\d+)?[a-z]?"
+ID = r"(?:ING|DAT|OPT|STR|EVT|LLM|BT|LIVE)-\d+(?:\.\d+)?[a-z]?"
 CODE_TAG = re.compile(rf"^\s*\[({ID})\]")
 DOC_HEADING = re.compile(rf"^### ({ID})\s+(\w+)", re.M)
 

@@ -23,7 +23,7 @@ Search just the prefix (`STR-2.1`, `ING-`) to see a whole group.
 | `OPT-nn` | `src/options/` | option RICs, Black-Scholes / Greeks | (planned) |
 | `STR-x.xa` | `strategy/strategy_logic.py` | the strategy rules | `STR-2.1c` is_shock |
 | `EVT-nn` | `src/events/` | building the shock event set | (planned) |
-| `BT-nn` | `src/backtest/` | simulating trades, fills, metrics | (planned) |
+| `BT-nn` | `src/backtest/` | simulating trades, fills, metrics | `BT-04` simulate_event |
 | `LIVE-nn` | `src/live/` | paper / live trading | (planned) |
 
 - **STR IDs use the spec section number** from `strategy/universe_and_parameters.txt`, plus a letter

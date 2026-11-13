@@ -1,0 +1,58 @@
+# No-stop-loss variant of backtest_grid.yaml: stop off, take-profit on (dynamic or fixed), entry wait 1-3 days.
+# Run: python -u scripts/run_backtest.py --config strategy/backtest_nostop.yaml --pricer panel --mode grid --start 2024-04-01
+
+# trade parameters: each value changes the simulated trade
+baseline:
+  short_delta: 0.20
+  long_method: width
+  width_pct: 0.05
+  min_credit_pct: 0.10              # spec says 0.25, but a 0.20-delta / 5%-wide spread only collects
+                                    # ~10-13% of width (credit/width ~ short delta - long delta): at 0.25
+                                    # almost nothing trades. Team to decide; 0.25 stays in the space below
+  target_dte: 21
+  iv_rv_min: 1.5
+  max_volume_mult: 1.5
+  max_wait: 3                       # was 10: entries after day +3 lost money (2026-11-12 panel run)
+  tp_mode: dynamic
+  outpace_margin: 0.20
+  stop_rules: []                    # no stop-loss: exit only by take-profit or expiry
+  credit_multiple: 2.0
+
+space:
+  short_delta: [0.15, 0.20, 0.25]
+  long_method: [width, delta]
+  width_pct: [0.025, 0.05, 0.075, 0.10]
+  long_delta: [0.05, 0.10]            # only used when long_method = delta
+  min_credit_pct: [0.10, 0.15, 0.20, 0.25, 0.33]
+  target_dte: [14, 21, 28, 35]
+  iv_rv_min: [1.2, 1.5, 2.0]
+  max_volume_mult: [1.5, 2.0, null]   # null = volume check off
+  max_wait: [1, 2, 3]
+  tp_mode: [dynamic, fixed]          # take-profit always on
+  fixed_target: [0.50, 0.75]          # only used when tp_mode = fixed
+  outpace_margin: [0.10, 0.20, 0.30]
+  stop_rules: [[]]
+
+grid_dims: [short_delta, width_pct, target_dte, max_wait]   # 3 x 4 x 4 x 3 = 144 combos
+
+# event filters: applied to finished trades (free), crossed with every trade combination
+event_filters:
+  event_set: [all, has_news, nj_both, nj_both_samecat, nj_opus, nj_gpt4o, not_j_both, j_both]
+  category: [any]                     # e.g. add "analyst downgrade", "peer/sector contagion"
+  min_ratio: [null]                   # e.g. [null, 2, 3, 5]
+  max_shock: [-0.05]                  # e.g. [-0.05, -0.10, -0.15]
+  mcap_floor: [5.0e+9]                # e.g. [5.0e+9, 2.0e+10, 5.0e+10, 1.0e+11]
+
+walk_forward:
+  train_quarters: 4
+  expanding: false
+  score: mean_ror                     # any BT-09 column: mean_ror, median_ror, t_by_date, sum_ror ...
+  min_trades: 20
+
+# --pricer proxy only (Black-Scholes stand-in until the OPRA panel is on this machine)
+proxy:
+  iv_mult: 1.3
+  skew: 1.0
+  half_spread: 0.05
+# both pricers: modeled half spread on option closes, as a share of the price (min $0.025)
+half_spread: 0.05

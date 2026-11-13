@@ -19,7 +19,7 @@ ING (download) ──► DAT (clean) ──► EVT (find shocks) ──► STR (
 | OPT | `src/options/` | [OPT_options.md](OPT_options.md) | 🚧 delta, implied vol, OCC symbols |
 | STR | `strategy/strategy_logic.py` | [STR_strategy.md](STR_strategy.md) | ✅ built, except 2.3 / 2.4 |
 | EVT | `src/events/` | [EVT_events.md](EVT_events.md) | ✅ price-only event study, option panel per event |
-| BT | `src/backtest/` | — | ⬜ not started |
+| BT | `src/backtest/` | [BT_backtest.md](BT_backtest.md) | ✅ engine, grid, walk-forward on real OPRA prices (proxy pricer for pre-2024); random-entry control |
 | LIVE | `src/live/` | — | ⬜ not started |
 
 Status key: ✅ done · 🚧 in progress · ⬜ planned
@@ -100,6 +100,24 @@ Status key: ✅ done · 🚧 in progress · ⬜ planned
 | EVT-10 | select_event_puts | option_panel.py | One day's usable puts per active event | ✅ |
 | EVT-11 | root_volume | option_panel.py | Daily option volume per underlying (STR-1.4a) | ✅ |
 | EVT-12 | add_iv_delta | option_panel.py | IV and delta for every put in the panel | ✅ |
+
+### BT: backtest (`src/backtest/`)
+
+| ID | Function | File | Purpose | Status |
+|---|---|---|---|---|
+| BT-01 | load_stock | market.py | Stock bars: unadjusted prices + adjusted returns | ✅ |
+| BT-02 | start | market.py | ProxyPricer: Black-Scholes stand-in for one event | ✅ |
+| BT-03 | start | market.py | PanelPricer: real OPRA puts for one event | ✅ |
+| BT-04 | simulate_event | engine.py | One spread per shock: entry, strikes, exits | ✅ |
+| BT-05 | expand_grid | grid.py | Full product of chosen parameters | ✅ |
+| BT-06 | one_at_a_time | grid.py | Baseline + one change at a time | ✅ |
+| BT-07 | event_mask | grid.py | Events kept by one event filter | ✅ |
+| BT-08 | event_filters | grid.py | Every event filter from the config | ✅ |
+| BT-09 | trade_metrics | grid.py | Win rate, mean / tail return on risk, t by date | ✅ |
+| BT-10 | portfolio_curve | grid.py | Trades as one book: sizing, sector cap, drawdown | ✅ |
+| BT-11 | quarterly_table | walk_forward.py | Metrics per group and quarter | ✅ |
+| BT-12 | quarter_folds | walk_forward.py | Quarterly walk-forward folds | ✅ |
+| BT-13 | walk_forward | walk_forward.py | Pick on past quarters, score on the next | ✅ |
 
 ### STR: strategy rules (`strategy/strategy_logic.py`)
 
