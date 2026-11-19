@@ -1,0 +1,26 @@
+  spy_eod_2010.parquet: 54,391 put rows
+  spy_eod_2011.parquet: 61,019 put rows
+  spy_eod_2012.parquet: 71,077 put rows
+  spy_eod_2013.parquet: 114,359 put rows
+  spy_eod_2014.parquet: 145,795 put rows
+  spy_eod_2015.parquet: 161,856 put rows
+  spy_eod_2016.parquet: 195,130 put rows
+  spy_eod_2017.parquet: 228,056 put rows
+  spy_eod_2018.parquet: 297,270 put rows
+  spy_eod_2019.parquet: 311,385 put rows
+  spy_eod_2020.parquet: 384,323 put rows
+  spy_eod_2021.parquet: 476,288 put rows
+  spy_eod_2022.parquet: 393,872 put rows
+  spy_eod_2023.parquet: 370,291 put rows
+W=$1: n=42 mean -0.68% [-1.87%, +0.32%] win 43% worst -18.0% | account -2.7%, max dd -2.7%, years 4/14, avg credit $0.067, avg width $1.88
+W=$2: n=43 mean +0.97% [+0.12%, +1.72%] win 79% worst -9.4% | account +3.5%, max dd -1.9%, years 12/14, avg credit $0.103, avg width $2.60
+W=$3: n=44 mean +1.47% [+0.69%, +2.17%] win 86% worst -8.2% | account +5.8%, max dd -1.0%, years 12/15, avg credit $0.137, avg width $3.39
+
+PRE-REGISTERED ACCOUNT-SIZE TEST, W = $1, 2010-2026
+  FAIL  1. mean ror > 0 with 95% interval above 0: -0.68% [-1.87%, +0.32%], n=42
+  FAIL  2. positive in >= 70% of years with trades: 4/14
+  PASS  3. worst month better than -25%: -1.8%
+  PASS  4. max drawdown better than -30%: -2.7%
+  yearly {2010: -0.0022, 2011: -0.0033, 2012: -0.006, 2013: -0.0054, 2014: -0.0036, 2015: 0.0015, 2017: -0.0025, 2019: -0.0002, 2020: 0.0051, 2021: -0.0023, 2022: 0.0104, 2023: 0.0058, 2024: -0.002, 2025: -0.0223}
+  VERDICT: FAIL
+  rules file sha256: 5870c0fd8dbb35a1

@@ -1,0 +1,10 @@
+{
+ "entry": "shock",
+ "structure": "S2 short 0.15d / long 0.05d",
+ "exit": "tp+7dte",
+ "design_t": 4.9860509375308135,
+ "design_mean": 0.025567425439692433,
+ "design_n": 59,
+ "deflated_sharpe_prob": 0.9832527338515731,
+ "n_trials": 48
+}

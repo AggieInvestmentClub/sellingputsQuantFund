@@ -1,0 +1,73 @@
+  spy_eod_2010.parquet: 54,391 put rows
+  spy_eod_2011.parquet: 61,019 put rows
+  spy_eod_2012.parquet: 71,077 put rows
+  spy_eod_2013.parquet: 114,359 put rows
+  spy_eod_2014.parquet: 145,795 put rows
+  spy_eod_2015.parquet: 161,856 put rows
+  spy_eod_2016.parquet: 195,130 put rows
+  spy_eod_2017.parquet: 228,056 put rows
+  spy_eod_2018.parquet: 297,270 put rows
+  spy_eod_2019.parquet: 311,385 put rows
+  spy_eod_2020.parquet: 384,323 put rows
+  spy_eod_2021.parquet: 476,288 put rows
+  spy_eod_2022.parquet: 393,872 put rows
+  spy_eod_2023.parquet: 370,291 put rows
+  weekly             S1 short 0.15d / long 5% lower   tp       n= 328 mean=+0.72% t=+0.90
+  weekly             S1 short 0.15d / long 5% lower   tp+7dte  n= 328 mean=+0.81% t=+1.69
+  weekly             S2 short 0.15d / long 0.05d      tp       n= 329 mean=+0.85% t=+1.01
+  weekly             S2 short 0.15d / long 0.05d      tp+7dte  n= 329 mean=+0.74% t=+1.36
+  weekly             S3 short 0.10d / long 0.03d      tp       n= 327 mean=+0.08% t=+0.15
+  weekly             S3 short 0.10d / long 0.03d      tp+7dte  n= 327 mean=+0.39% t=+1.41
+  weekly+guard       S1 short 0.15d / long 5% lower   tp       n= 201 mean=+0.26% t=+0.26
+  weekly+guard       S1 short 0.15d / long 5% lower   tp+7dte  n= 201 mean=+0.69% t=+1.47
+  weekly+guard       S2 short 0.15d / long 0.05d      tp       n= 201 mean=+0.50% t=+0.47
+  weekly+guard       S2 short 0.15d / long 0.05d      tp+7dte  n= 201 mean=+0.61% t=+0.99
+  weekly+guard       S3 short 0.10d / long 0.03d      tp       n= 201 mean=+0.02% t=+0.02
+  weekly+guard       S3 short 0.10d / long 0.03d      tp+7dte  n= 201 mean=+0.22% t=+0.62
+  vrp                S1 short 0.15d / long 5% lower   tp       n= 154 mean=+0.41% t=+0.33
+  vrp                S1 short 0.15d / long 5% lower   tp+7dte  n= 154 mean=+0.68% t=+0.84
+  vrp                S2 short 0.15d / long 0.05d      tp       n= 155 mean=+0.99% t=+0.84
+  vrp                S2 short 0.15d / long 0.05d      tp+7dte  n= 155 mean=+0.84% t=+1.02
+  vrp                S3 short 0.10d / long 0.03d      tp       n= 155 mean=+0.26% t=+0.33
+  vrp                S3 short 0.10d / long 0.03d      tp+7dte  n= 155 mean=+0.60% t=+1.84
+  vrp+guard          S1 short 0.15d / long 5% lower   tp       n=  92 mean=+0.59% t=+0.43
+  vrp+guard          S1 short 0.15d / long 5% lower   tp+7dte  n=  92 mean=+0.85% t=+1.32
+  vrp+guard          S2 short 0.15d / long 0.05d      tp       n=  92 mean=+1.39% t=+1.08
+  vrp+guard          S2 short 0.15d / long 0.05d      tp+7dte  n=  92 mean=+0.98% t=+1.31
+  vrp+guard          S3 short 0.10d / long 0.03d      tp       n=  92 mean=+0.81% t=+1.43
+  vrp+guard          S3 short 0.10d / long 0.03d      tp+7dte  n=  92 mean=+0.53% t=+1.47
+  shock              S1 short 0.15d / long 5% lower   tp       n=  59 mean=+0.24% t=+0.12
+  shock              S1 short 0.15d / long 5% lower   tp+7dte  n=  59 mean=+2.23% t=+3.33
+  shock              S2 short 0.15d / long 0.05d      tp       n=  59 mean=+1.40% t=+0.83
+  shock              S2 short 0.15d / long 0.05d      tp+7dte  n=  59 mean=+2.56% t=+4.99
+  shock              S3 short 0.10d / long 0.03d      tp       n=  59 mean=+1.17% t=+1.45
+  shock              S3 short 0.10d / long 0.03d      tp+7dte  n=  59 mean=+1.42% t=+4.30
+  shock+guard        S1 short 0.15d / long 5% lower   tp       n=  18 mean=-3.61% t=-0.80
+  shock+guard        S1 short 0.15d / long 5% lower   tp+7dte  n=  18 mean=+0.12% t=+0.09
+  shock+guard        S2 short 0.15d / long 0.05d      tp       n=  18 mean=+0.81% t=+0.39
+  shock+guard        S2 short 0.15d / long 0.05d      tp+7dte  n=  18 mean=+1.64% t=+2.28
+  shock+guard        S3 short 0.10d / long 0.03d      tp       n=  18 mean=+1.70% t=+10.51
+  shock+guard        S3 short 0.10d / long 0.03d      tp+7dte  n=  18 mean=+0.84% t=+1.67
+  shock+vrp+guard    S1 short 0.15d / long 5% lower   tp       n=  11 mean=-7.98% t=-1.11
+  shock+vrp+guard    S1 short 0.15d / long 5% lower   tp+7dte  n=  11 mean=-1.85% t=-0.87
+  shock+vrp+guard    S2 short 0.15d / long 0.05d      tp       n=  11 mean=-0.71% t=-0.21
+  shock+vrp+guard    S2 short 0.15d / long 0.05d      tp+7dte  n=  11 mean=+0.65% t=+0.60
+  shock+vrp+guard    S3 short 0.10d / long 0.03d      tp       n=  11 mean=+1.66% t=+9.35
+  shock+vrp+guard    S3 short 0.10d / long 0.03d      tp+7dte  n=  11 mean=+0.26% t=+0.35
+  shock+guard+cap    S1 short 0.15d / long 5% lower   tp       n=  18 mean=-3.61% t=-0.80
+  shock+guard+cap    S1 short 0.15d / long 5% lower   tp+7dte  n=  18 mean=+0.12% t=+0.09
+  shock+guard+cap    S2 short 0.15d / long 0.05d      tp       n=  18 mean=+0.81% t=+0.39
+  shock+guard+cap    S2 short 0.15d / long 0.05d      tp+7dte  n=  18 mean=+1.64% t=+2.28
+  shock+guard+cap    S3 short 0.10d / long 0.03d      tp       n=  18 mean=+1.70% t=+10.51
+  shock+guard+cap    S3 short 0.10d / long 0.03d      tp+7dte  n=  18 mean=+0.84% t=+1.67
+
+DESIGN PICK: {
+ "entry": "shock",
+ "structure": "S2 short 0.15d / long 0.05d",
+ "exit": "tp+7dte",
+ "design_t": 4.9860509375308135,
+ "design_mean": 0.025567425439692433,
+ "design_n": 59,
+ "deflated_sharpe_prob": 0.9832527338515731,
+ "n_trials": 48
+}

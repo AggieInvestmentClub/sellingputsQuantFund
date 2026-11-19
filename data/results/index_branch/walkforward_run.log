@@ -1,0 +1,87 @@
+  spy_eod_2010.parquet: 54,391 put rows
+  spy_eod_2011.parquet: 61,019 put rows
+  spy_eod_2012.parquet: 71,077 put rows
+  spy_eod_2013.parquet: 114,359 put rows
+  spy_eod_2014.parquet: 145,795 put rows
+  spy_eod_2015.parquet: 161,856 put rows
+  spy_eod_2016.parquet: 195,130 put rows
+  spy_eod_2017.parquet: 228,056 put rows
+  spy_eod_2018.parquet: 297,270 put rows
+  spy_eod_2019.parquet: 311,385 put rows
+  spy_eod_2020.parquet: 384,323 put rows
+  spy_eod_2021.parquet: 476,288 put rows
+  spy_eod_2022.parquet: 393,872 put rows
+  spy_eod_2023.parquet: 370,291 put rows
+  weekly             S1 short 0.15d / long 5% lower tp       n=818
+  weekly             S1 short 0.15d / long 5% lower tp+7dte  n=818
+  weekly             S2 short 0.15d / long 0.05d    tp       n=819
+  weekly             S2 short 0.15d / long 0.05d    tp+7dte  n=819
+  weekly             S3 short 0.10d / long 0.03d    tp       n=815
+  weekly             S3 short 0.10d / long 0.03d    tp+7dte  n=815
+  weekly+guard       S1 short 0.15d / long 5% lower tp       n=485
+  weekly+guard       S1 short 0.15d / long 5% lower tp+7dte  n=485
+  weekly+guard       S2 short 0.15d / long 0.05d    tp       n=485
+  weekly+guard       S2 short 0.15d / long 0.05d    tp+7dte  n=485
+  weekly+guard       S3 short 0.10d / long 0.03d    tp       n=485
+  weekly+guard       S3 short 0.10d / long 0.03d    tp+7dte  n=485
+  vrp                S1 short 0.15d / long 5% lower tp       n=363
+  vrp                S1 short 0.15d / long 5% lower tp+7dte  n=363
+  vrp                S2 short 0.15d / long 0.05d    tp       n=364
+  vrp                S2 short 0.15d / long 0.05d    tp+7dte  n=364
+  vrp                S3 short 0.10d / long 0.03d    tp       n=363
+  vrp                S3 short 0.10d / long 0.03d    tp+7dte  n=363
+  vrp+guard          S1 short 0.15d / long 5% lower tp       n=218
+  vrp+guard          S1 short 0.15d / long 5% lower tp+7dte  n=218
+  vrp+guard          S2 short 0.15d / long 0.05d    tp       n=218
+  vrp+guard          S2 short 0.15d / long 0.05d    tp+7dte  n=218
+  vrp+guard          S3 short 0.10d / long 0.03d    tp       n=218
+  vrp+guard          S3 short 0.10d / long 0.03d    tp+7dte  n=218
+  shock              S1 short 0.15d / long 5% lower tp       n=170
+  shock              S1 short 0.15d / long 5% lower tp+7dte  n=170
+  shock              S2 short 0.15d / long 0.05d    tp       n=170
+  shock              S2 short 0.15d / long 0.05d    tp+7dte  n=170
+  shock              S3 short 0.10d / long 0.03d    tp       n=170
+  shock              S3 short 0.10d / long 0.03d    tp+7dte  n=170
+  shock+guard        S1 short 0.15d / long 5% lower tp       n=46
+  shock+guard        S1 short 0.15d / long 5% lower tp+7dte  n=46
+  shock+guard        S2 short 0.15d / long 0.05d    tp       n=46
+  shock+guard        S2 short 0.15d / long 0.05d    tp+7dte  n=46
+  shock+guard        S3 short 0.10d / long 0.03d    tp       n=46
+  shock+guard        S3 short 0.10d / long 0.03d    tp+7dte  n=46
+  shock+vrp+guard    S1 short 0.15d / long 5% lower tp       n=26
+  shock+vrp+guard    S1 short 0.15d / long 5% lower tp+7dte  n=26
+  shock+vrp+guard    S2 short 0.15d / long 0.05d    tp       n=26
+  shock+vrp+guard    S2 short 0.15d / long 0.05d    tp+7dte  n=26
+  shock+vrp+guard    S3 short 0.10d / long 0.03d    tp       n=26
+  shock+vrp+guard    S3 short 0.10d / long 0.03d    tp+7dte  n=26
+  shock+guard+cap    S1 short 0.15d / long 5% lower tp       n=46
+  shock+guard+cap    S1 short 0.15d / long 5% lower tp+7dte  n=46
+  shock+guard+cap    S2 short 0.15d / long 0.05d    tp       n=46
+  shock+guard+cap    S2 short 0.15d / long 0.05d    tp+7dte  n=46
+  shock+guard+cap    S3 short 0.10d / long 0.03d    tp       n=46
+  shock+guard+cap    S3 short 0.10d / long 0.03d    tp+7dte  n=46
+
+WALK-FORWARD PICKS (chosen each year from earlier years only):
+ year                                           pick  train_n   train_t  trades  year_mean
+ 2014  shock | S3 short 0.10d / long 0.03d | tp+7dte       34  2.507462       7   0.007062
+ 2015  shock | S2 short 0.15d / long 0.05d | tp+7dte       41  2.852648      12   0.035745
+ 2016  shock | S2 short 0.15d / long 0.05d | tp+7dte       53  4.238392       6   0.040376
+ 2017  shock | S2 short 0.15d / long 0.05d | tp+7dte       59  4.986051       2   0.019410
+ 2018 shock+guard | S3 short 0.10d / long 0.03d | tp       20 10.343645       0        NaN
+ 2019 shock+guard | S3 short 0.10d / long 0.03d | tp       20 10.343645       2   0.020038
+ 2020 shock+guard | S3 short 0.10d / long 0.03d | tp       22 11.286383       3   0.024882
+ 2021 shock+guard | S3 short 0.10d / long 0.03d | tp       25 11.733855       6   0.018111
+ 2022 shock+guard | S3 short 0.10d / long 0.03d | tp       31 14.419392       4   0.026759
+ 2023 shock+guard | S3 short 0.10d / long 0.03d | tp       35 15.447116       4   0.024870
+ 2024 shock+guard | S3 short 0.10d / long 0.03d | tp       39 16.859232       1   0.007753
+ 2025 shock+guard | S3 short 0.10d / long 0.03d | tp       40 16.495300       4   0.013863
+ 2026 shock+guard | S3 short 0.10d / long 0.03d | tp       44 17.101791       2   0.014354
+
+PRE-REGISTERED WALK-FORWARD TEST 2014..2026 (net of costs, 10% risk, one open)
+  PASS  1. mean ror > 0 with 95% interval above 0: +2.42% [+1.96%, +2.82%], n=53
+  PASS  2. positive in >= 70% of calendar years: 12/12
+  PASS  3. worst month better than -25%: -0.6%
+  PASS  4. max drawdown better than -30%: -0.6%
+  account: total +11.5%, max drawdown -0.6%, trades taken 47, yearly {2014: 0.0012, 2015: 0.0355, 2016: 0.0184, 2017: 0.0039, 2019: 0.004, 2020: 0.0075, 2021: 0.0109, 2022: 0.0107, 2023: 0.0076, 2024: 0.0008, 2025: 0.0055, 2026: 0.0029}
+  VERDICT: PASS
+  rules file sha256: 4d5605e152a14547
