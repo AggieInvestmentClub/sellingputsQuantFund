@@ -119,7 +119,8 @@ def cmd_index(a):
         vix = float(v.iloc[-1]) if len(v) else None
     pos = pd.read_csv(OUT / "positions.csv") if (OUT / "positions.csv").exists() else pd.DataFrame(columns=["ric", "status"])
     n_open = int(((pos["ric"] == "XSP") & (pos["status"].fillna("open").str.lower() == "open")).sum())
-    r = index_plan(today, spy, a.capital, a.risk_usd, a.width, a.iv, vix, n_open, a.max_open)
+    r = index_plan(today, spy, a.capital, a.risk_usd, a.width, a.iv, vix, n_open, a.max_open, _allow_deprecated=True)
+    r["action"] = "DEPRECATED - DO NOT TRADE: " + str(r.get("action"))
     df = pd.DataFrame([r])
     df.to_csv(OUT / f"index_plan_{pd.Timestamp(r['as_of']):%Y%m%d}.csv", index=False)
     show(df, ["ric", "as_of", "action", "expiry", "dte", "short_strike", "long_strike", "width", "est_credit",
@@ -148,9 +149,14 @@ def main():
     ix.add_argument("--iv", type=float, help="broker's put IV near 0.15 delta (decimal)")
     ix.add_argument("--max-open", type=int, default=1)
     ix.add_argument("--today")
+    ix.add_argument("--i-know-this-failed", action="store_true", help="research only: run the deprecated failed rule")
     mg = sub.add_parser("manage")
     mg.add_argument("--today")
     a = ap.parse_args()
+    if a.cmd == "index" and not a.i_know_this_failed:
+        sys.exit("DEPRECATED (AG-17q): 'trade_desk.py index' is the weekly XSP 0.15-delta $1-wide spread that FAILED "
+                 "strategy/preregistered_spy.md (2010-2023). Do not trade it. Use scripts/index_signal.py (the tested "
+                 "index branch). For research only: add --i-know-this-failed (output is labelled DEPRECATED).")
     {"plan": cmd_plan, "index": cmd_index, "manage": cmd_manage}[a.cmd](a)
 
 

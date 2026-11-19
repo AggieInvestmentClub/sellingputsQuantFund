@@ -162,7 +162,7 @@ def manage(pos, S, today, px_entry_close=None, mark=None):
 
 
 def index_plan(today, spy_px, capital, risk_usd, width=1.0, iv=None, vix=None, open_positions=0, max_open=1,
-               short_delta=0.15, target_dte=21, min_credit_pct=0.10):
+               short_delta=0.15, target_dte=21, min_credit_pct=0.10, _allow_deprecated=False):
     """
     [AG-17] the index trade (the benchmark that beat the single-stock shocks, scripts/spy_benchmark.py):
     a bull put spread on XSP (S&P 500 / 10, cash-settled, European: no early assignment, no shares at expiry)
@@ -170,6 +170,10 @@ def index_plan(today, spy_px, capital, risk_usd, width=1.0, iv=None, vix=None, o
     iv: broker's ~0.15-delta put IV if known; else VIX/100 + 0.03 (puts below the money trade above VIX),
     else 1.3x 20-day realized vol. Returns dict with action ENTER TOMORROW / HOLD OFF and the order details.
     """
+    if not _allow_deprecated:
+        raise RuntimeError("index_plan (AG-17) is DEPRECATED: the weekly XSP 0.15-delta rule failed "
+                           "strategy/preregistered_spy.md. Use scripts/index_signal.py. Pass _allow_deprecated=True "
+                           "for research only.")
     today = pd.Timestamp(today).normalize()
     c = spy_px["close"].loc[:today]
     S = float(c.iloc[-1])

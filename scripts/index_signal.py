@@ -6,8 +6,9 @@ Run after 15:00 CST, after scripts/live_scan.py has updated data/raw/prices/dail
 
     py -3.12 -u scripts/index_signal.py --capital 5000
 
---capital sets the spread width by the pre-registered capital rule (AG-28d): W = floor(capital x 10% / 100) dollars;
-W >= 15 uses the 0.03-delta long leg. Capital test 2010-2026 (data/results/index_branch/capital_run.log):
+--capital sets the spread width by the capital rule v2 (AG-28f, strategy/preregistered_capital_fix.md):
+W = floor(capital x 10% / 100) dollars; the long leg is the NARROWER of $W below the short and the 0.03-delta put,
+and the max loss must fit 10% of capital (v1 used the 0.03-delta leg unchecked at W >= 15: 16-22% risk in 2024-26). Capital test 2010-2026 (data/results/index_branch/capital_run.log):
 $1,000 FAIL, $2,000 FAIL, $2,500 PASS (borderline), $5,000 / $10,000 / $25,000 PASS.
 
 Entry = SPY fell >= 1.5% in a day (or >= 2.5% over 2 days), then on day +1..+3 closes ABOVE the post-shock low,
@@ -55,16 +56,16 @@ def main():
     else:
         rv = c.pct_change().iloc[-20:].std() * math.sqrt(252)
         print(f"ENTRY SIGNAL (paper unless the account can carry it). Realized vol 20d {rv:.0%}.")
-        print("  In the broker, XSP (or SPY) puts, the Friday expiry closest to 21 days (14-35):")
+        print("  In the broker, XSP puts (European, cash-settled: no early assignment; do NOT use SPY options),")
+        print("  the Friday expiry closest to 21 days (14-35):")
         print("  1. Guard: ATM put IV at ~9 days must NOT be above ATM put IV at ~30 days. If it is: no entry.")
         W = int(a.capital * 0.10 // 100) if a.capital else 15
         if W < 1 or (a.capital and a.capital < 2500):
             print(f"  ACCOUNT ${a.capital:,.0f}: FAILED the capital test (needs >= $2,500 at 10% risk). Paper-trade only.")
-        if W >= 15:
-            print("  2. Sell the put closest to delta -0.10; buy the put closest to delta -0.03 (same expiry).")
-        else:
-            print(f"  2. Sell the put closest to delta -0.10; buy the put ${max(W, 1)} lower (same expiry). "
-                  f"Max loss <= ${max(W, 1) * 100}.")
+        Wd = max(W, 1)
+        print(f"  2. Sell the XSP put closest to delta -0.10. Buy the put ${Wd} lower OR the put closest to delta -0.03,")
+        print(f"     whichever strike is HIGHER (narrower spread), same expiry. Max loss must be <= ${Wd * 100 * 1.15:,.0f}"
+              f" (10% of capital, +15% slack); if not, skip.")
         print("  3. Only if credit (bid of short - ask of long) > 0 after fees; max loss = width - credit per share.")
         print("  4. Exit: dynamic take-profit (trade_desk.py manage), else hold to expiry; no stop.")
 

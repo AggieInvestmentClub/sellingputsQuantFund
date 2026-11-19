@@ -35,7 +35,8 @@ FEE = 0.65 / 100
 FILL = 1.0   # share of each leg's half bid/ask spread paid: 1 = sell at bid / buy at ask (all tests), 0 = mid (AG-28e)
 PERIODS = {"design": ("2010-01-01", "2016-12-31"), "validate": ("2017-01-01", "2020-12-31"),
            "final": ("2021-01-01", "2026-12-31"), "walkforward": ("2010-01-01", "2026-12-31"),
-           "small": ("2010-01-01", "2026-12-31"), "capital": ("2010-01-01", "2026-12-31")}
+           "small": ("2010-01-01", "2026-12-31"), "capital": ("2010-01-01", "2026-12-31"),
+           "capital_v2": ("2010-01-01", "2026-12-31")}
 OUT = Path("data/results/index_branch")
 PREREG = Path("strategy/preregistered_index_branch.md")
 
@@ -224,6 +225,11 @@ def trade(d, chain_by_day, ix, spot, structure, exit_rule):
         l = lg.loc[(lg["strike"] - (s.strike - lval * S)).abs().idxmin()]
     elif lmode == "abs":
         l = lg.loc[(lg["strike"] - (s.strike - lval)).abs().idxmin()]
+    elif lmode == "minw":                       # [AG-28f] narrower of ($W below the short) and the 0.03-delta put
+        w_dollars, dlt = lval
+        la = lg.loc[(lg["strike"] - (s.strike - w_dollars)).abs().idxmin()]
+        ld = lg.loc[(lg["delta"] + dlt).abs().idxmin()]
+        l = la if la.strike >= ld.strike else ld
     else:
         l = lg.loc[(lg["delta"] + lval).abs().idxmin()]
     width = float(s.strike - l.strike)
@@ -284,6 +290,50 @@ def stats(t, risk=0.10, spot=None, seed=0):
             "maxdd": float((eq / eq.cummax() - 1).min()), "years_pos": f"{int((yearly > 0).sum())}/{len(yearly)}",
             "years_pos_share": float((yearly > 0).mean()), "worst_month": float(monthly.min()),
             "yearly": {int(k): round(float(v), 4) for k, v in yearly.items()}}
+
+
+# ---------------------------------------------------------------- capital rule v2
+def capital_structure(capital, risk_pct=0.10):
+    """[AG-28f] strategy/preregistered_capital_fix.md: W = floor(capital x risk / 100); long leg = narrower of $W and
+    the 0.03-delta put. Returns (budget, W, structure); W < 1 -> structure None (account too small)."""
+    budget = capital * risk_pct
+    W = int(budget // 100)
+    return budget, W, ((0.10, ("minw", (float(W), 0.03))) if W >= 1 else None)
+
+
+def within_budget(t, budget, slack=1.15):
+    """keep only spreads whose max loss fits the budget (every account size, unlike v1)"""
+    if t is None or len(t) == 0:
+        return t
+    return t[(t["width"] - t["credit"]) * 100 <= budget * slack]
+
+
+def capital_v2(f, by, ix, spot, capital, risk_pct=0.10):
+    if not capital:
+        sys.exit("--capital is required with --stage capital_v2")
+    budget, W, struct = capital_structure(capital, risk_pct)
+    if struct is None:
+        sys.exit(f"${capital:,.0f} x {risk_pct:.0%} = ${budget:,.0f}: less than one $1-wide spread. Not tradeable.")
+    import hashlib
+    sha = hashlib.sha256(Path("strategy/preregistered_capital_fix.md").read_bytes()).hexdigest()[:16]
+    rows = [trade(d, by, ix, spot, struct, "tp") for d in entry_dates(f, "shock+guard")]
+    t = within_budget(pd.DataFrame([r for r in rows if r]), budget)
+    t.to_csv(OUT / f"capital_v2_{int(capital)}_trades.csv", index=False)
+    raw, acct = stats(t, risk_pct), stats(one_open(t), risk_pct)
+    checks = [("1. mean ror > 0 with 95% interval above 0", raw["ci_lo"] > 0,
+               f"{raw['mean']:+.2%} [{raw['ci_lo']:+.2%}, {raw['ci_hi']:+.2%}], n={raw['n']}"),
+              ("2. positive in >= 70% of years with trades", acct["years_pos_share"] >= 0.7, acct["years_pos"]),
+              ("3. worst month better than -25%", acct["worst_month"] > -0.25, f"{acct['worst_month']:+.1%}"),
+              ("4. max drawdown better than -30%", acct["maxdd"] > -0.30, f"{acct['maxdd']:+.1%}")]
+    risk_share = ((t["width"] - t["credit"]) * 100 / capital)
+    print(f"\nCAPITAL TEST v2 (pre-reg sha {sha}): ${capital:,.0f}, budget ${budget:,.0f}, long leg = narrower of ${W} and 0.03d")
+    for name, ok, det in checks:
+        print(f"  {'PASS' if ok else 'FAIL'}  {name}: {det}")
+    print(f"  account (one spread at a time): {acct['total']:+.1%}, max dd {acct['maxdd']:+.1%}, avg credit "
+          f"${t['credit'].mean():.2f}, avg width ${t['width'].mean():.2f}, max risk per trade {risk_share.max():.1%} of capital")
+    print(f"  yearly {acct['yearly']}")
+    print(f"  VERDICT: {'PASS' if all(c[1] for c in checks) else 'FAIL'}")
+    return t
 
 
 # ---------------------------------------------------------------- pipeline
@@ -367,15 +417,17 @@ def walk_forward(tr, first=2014, last=2026, min_trades=20):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", choices=["design", "validate", "final", "walkforward", "small", "capital"], required=True)
+    ap.add_argument("--stage", choices=["design", "validate", "final", "walkforward", "small", "capital", "capital_v2"], required=True)
     ap.add_argument("--capital", type=float, help="--stage capital: account size in $")
     ap.add_argument("--risk-pct", type=float, default=0.10, help="--stage capital: max loss per trade as share of capital")
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     f, by, ix, spot = build(a.stage)
     f.to_csv(OUT / f"features_{a.stage}.csv")
+    if a.stage == "capital_v2":
+        return capital_v2(f, by, ix, spot, a.capital, a.risk_pct)
     if a.stage == "capital":
-        # [AG-28d] account-size rule (strategy/preregistered_index_branch_small.md, "Capital rule"):
+        # [AG-28d] (v1, kept to reproduce the frozen result; it has the W >= 15 sizing bug -> use capital_v2) account-size rule (strategy/preregistered_index_branch_small.md, "Capital rule"):
         # W = largest whole $ with W x 100 <= capital x risk_pct; W >= 15 -> the tested delta-based long leg (0.03d)
         if not a.capital:
             sys.exit("--capital is required with --stage capital")
