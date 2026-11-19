@@ -34,6 +34,7 @@ from strategy.strategy_logic import pick_expiry, should_take_profit  # noqa: E40
 
 PREREG = Path("strategy/preregistered_etf_branch.md")
 OUT = Path("data/results/etf_branch")
+CACHE = Path("data/results/etf_branch/cache")   # shared by every spec (--prereg)
 ETF_DIR = Path("data/processed/options/etf")
 PX_DIR = Path("data/raw/prices_bulk")
 SPY_CSV = Path("data/processed/options/spy_puts_2024_2026.csv")
@@ -58,7 +59,7 @@ def parse_tickers(tickers, root):
 
 def split_months(force=False):
     """one pass over the monthly ETF files -> OUT/cache/<ROOT>.parquet (date, expiry, strike, volume, close)"""
-    cache = OUT / "cache"
+    cache = CACHE
     cache.mkdir(parents=True, exist_ok=True)
     files = sorted(ETF_DIR.glob("puts_*.csv.gz"))
     if not files:
@@ -393,9 +394,9 @@ def run(capitals):
     if spy_adj is None:
         sys.exit("SPY prices missing in data/raw/prices_bulk: run scripts/download_etf_prices.py")
     cands, per = [], []
-    for root in ROOTS:
+    for root in spec.get("roots", ROOTS):
         t0 = time.time()
-        f = OUT / "cache" / f"{root}.parquet"
+        f = CACHE / f"{root}.parquet"
         adj, unadj = load_prices(root)
         if not f.exists() or adj is None:
             print(f"  {root:5s} skipped (no {'options' if not f.exists() else 'prices'})", flush=True)
@@ -464,7 +465,12 @@ def main():
     g.add_argument("--prepare", action="store_true")
     g.add_argument("--run", action="store_true")
     ap.add_argument("--capital", type=float, nargs="+")
+    ap.add_argument("--prereg", help="another frozen spec (e.g. strategy/preregistered_etf_transfer.md)")
+    ap.add_argument("--out", help="results folder for that spec")
     a = ap.parse_args()
+    global PREREG, OUT
+    if a.prereg:
+        PREREG, OUT = Path(a.prereg), Path(a.out or "data/results/" + Path(a.prereg).stem.replace("preregistered_", ""))
     if a.validate_spy:
         validate_spy()
     elif a.prepare:
