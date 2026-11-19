@@ -1,0 +1,98 @@
+pre-registration strategy/preregistered_etf_branch.md sha256 1220b9d95e36bec8  (evidence, not proof: ~2.5 years of option data)
+
+  puts_2024-04.csv.gz: 201,908 rows
+  puts_2024-05.csv.gz: 190,087 rows
+  puts_2024-06.csv.gz: 159,557 rows
+  puts_2024-07.csv.gz: 196,985 rows
+  puts_2024-08.csv.gz: 224,899 rows
+  puts_2024-09.csv.gz: 202,477 rows
+  puts_2024-10.csv.gz: 224,769 rows
+  puts_2024-11.csv.gz: 199,644 rows
+  puts_2024-12.csv.gz: 199,366 rows
+  puts_2025-01.csv.gz: 190,426 rows
+  puts_2025-02.csv.gz: 185,063 rows
+  puts_2025-03.csv.gz: 239,482 rows
+  puts_2025-04.csv.gz: 281,943 rows
+  puts_2025-05.csv.gz: 235,990 rows
+  puts_2025-06.csv.gz: 211,675 rows
+  puts_2025-07.csv.gz: 223,410 rows
+  puts_2025-08.csv.gz: 210,337 rows
+  puts_2025-09.csv.gz: 237,003 rows
+  puts_2025-10.csv.gz: 282,206 rows
+  puts_2025-11.csv.gz: 222,453 rows
+  puts_2025-12.csv.gz: 249,984 rows
+  puts_2026-01.csv.gz: 258,673 rows
+  puts_2026-02.csv.gz: 257,678 rows
+  puts_2026-03.csv.gz: 331,519 rows
+  puts_2026-04.csv.gz: 311,129 rows
+  puts_2026-05.csv.gz: 300,636 rows
+  puts_2026-06.csv.gz: 314,065 rows
+  puts_2026-07.csv.gz: 305,072 rows
+  puts_2026-08.csv.gz: 307,385 rows
+  puts_2026-09.csv.gz: 302,481 rows
+  puts_2026-10.csv.gz: 290,475 rows
+  cache written: data/results/etf_branch/cache
+  SPY    648 days,  42 shocks,   7 entries (7s)
+  QQQ    648 days,  45 shocks,   9 entries (6s)
+  IWM    648 days,  36 shocks,   8 entries (4s)
+  DIA    648 days,  38 shocks,   6 entries (3s)
+  XLF    648 days,  36 shocks,  10 entries (3s)
+  XLK    648 days,  53 shocks,   9 entries (3s)
+  XLE    648 days,  48 shocks,   6 entries (3s)
+  XLV    648 days,  47 shocks,   5 entries (3s)
+  XLI    648 days,  39 shocks,   8 entries (2s)
+  XLY    648 days,  38 shocks,  10 entries (2s)
+  XLP    648 days,  51 shocks,   4 entries (2s)
+  XLU    648 days,  41 shocks,   9 entries (2s)
+  XLB    648 days,  38 shocks,   3 entries (2s)
+  SMH    648 days,  48 shocks,   7 entries (3s)
+  XBI    648 days,  42 shocks,   7 entries (2s)
+  KRE    648 days,  24 shocks,   2 entries (2s)
+  GLD    648 days,  54 shocks,  11 entries (4s)
+  SLV    648 days,  48 shocks,  12 entries (3s)
+  TLT    648 days,  34 shocks,   3 entries (3s)
+  HYG    648 days,  42 shocks,  12 entries (2s)
+  EEM    648 days,  46 shocks,   7 entries (2s)
+  EFA    648 days,  42 shocks,   7 entries (2s)
+  FXI    648 days,  21 shocks,   1 entries (2s)
+  EWZ    648 days,  40 shocks,   0 entries (2s)
+  GDX    648 days,  47 shocks,   8 entries (2s)
+  XOP    648 days,  46 shocks,   6 entries (2s)
+  USO    648 days,  47 shocks,   1 entries (3s)
+  ARKK   647 days,  40 shocks,   8 entries (3s)
+  KWEB   648 days,  26 shocks,   1 entries (2s)
+
+ETF BRANCH: $2,500, width $2 (or the 0.03-delta put if narrower), 2024-04-01..2026-10-13
+  FAIL  1 mean ror > 0, week-clustered 95% interval above 0
+  FAIL  2 account positive over the period
+  PASS  3 max drawdown better than -30%
+  PASS  4 worst month better than -25%
+  54 trades (21.3/yr, 0 skipped by the 30% cap, 43% in weeks with 2+ trades) | mean ror -4.33% [-10.52%, +0.53%] win 30%
+  account: $-466 (-18.6%) = $-184/yr (-7.36%/yr), max dd -21.3%, worst month -9.9%
+  yearly $ {2024: -165.0, 2025: -221.75, 2026: -79.15}
+  per ETF: ARKK 3 (-35.6%, $-209), DIA 1 (-14.3%, $-28), EEM 1 (+1.2%, $+2), GDX 4 (+2.3%, $+19), GLD 7 (-1.8%, $-25), HYG 1 (+42.0%, $+104), IWM 3 (+2.8%, $+23), QQQ 1 (-3.1%, $-6), SLV 9 (-3.4%, $-55), SPY 2 (-6.4%, $-24), TLT 2 (-2.5%, $-11), USO 1 (-10.0%, $-20), XBI 1 (+2.6%, $+5), XLE 4 (-25.6%, $-243), XLF 6 (-1.2%, $-15), XLI 1 (-0.4%, $-1), XLK 2 (+3.5%, $+14), XLP 1 (+2.5%, $+5), XLU 2 (+1.0%, $+4), XLV 1 (-3.7%, $-7), XLY 1 (+0.4%, $+1)
+  VERDICT: FAIL (evidence, not proof)
+
+ETF BRANCH: $5,000, width $5 (or the 0.03-delta put if narrower), 2024-04-01..2026-10-13
+  FAIL  1 mean ror > 0, week-clustered 95% interval above 0
+  FAIL  2 account positive over the period
+  PASS  3 max drawdown better than -30%
+  PASS  4 worst month better than -25%
+  68 trades (26.9/yr, 16 skipped by the 30% cap, 53% in weeks with 2+ trades) | mean ror -2.98% [-7.96%, +0.84%] win 50%
+  account: $-990 (-19.8%) = $-391/yr (-7.82%/yr), max dd -21.1%, worst month -9.6%
+  yearly $ {2024: -730.15, 2025: -187.25, 2026: -72.2}
+  per ETF: ARKK 2 (-19.5%, $-225), DIA 1 (+0.2%, $+1), EEM 1 (+0.9%, $+4), EFA 1 (-0.0%, $-0), GDX 4 (+0.0%, $+2), GLD 8 (+0.2%, $+11), HYG 2 (+20.3%, $+202), IWM 4 (+2.3%, $+39), QQQ 5 (-20.1%, $-463), SLV 7 (+0.0%, $-0), SMH 2 (-6.9%, $-69), SPY 3 (+0.2%, $+2), TLT 3 (-1.1%, $-11), XBI 1 (+6.2%, $+29), XLE 5 (-19.8%, $-472), XLF 7 (-0.6%, $-23), XLI 3 (-4.1%, $-61), XLK 5 (+1.7%, $+40), XLP 1 (+2.5%, $+10), XLU 2 (+0.7%, $+6), XLY 1 (-1.9%, $-10)
+  VERDICT: FAIL (evidence, not proof)
+
+ETF BRANCH: $10,000, width $10 (or the 0.03-delta put if narrower), 2024-04-01..2026-10-13
+  FAIL  1 mean ror > 0, week-clustered 95% interval above 0
+  FAIL  2 account positive over the period
+  PASS  3 max drawdown better than -30%
+  PASS  4 worst month better than -25%
+  72 trades (28.4/yr, 24 skipped by the 30% cap, 56% in weeks with 2+ trades) | mean ror -1.88% [-6.64%, +1.74%] win 71%
+  account: $-1,199 (-12.0%) = $-473/yr (-4.73%/yr), max dd -15.6%, worst month -9.4%
+  yearly $ {2024: -1415.2, 2025: -29.9, 2026: 246.2}
+  per ETF: ARKK 2 (-19.7%, $-220), DIA 3 (+0.7%, $+23), EEM 2 (+1.4%, $+19), EFA 1 (-0.0%, $-0), GDX 4 (+0.0%, $-7), GLD 8 (+1.3%, $+99), HYG 1 (+42.0%, $+414), IWM 5 (+2.9%, $+133), KRE 1 (+2.5%, $+17), QQQ 5 (-19.5%, $-929), SLV 6 (+0.2%, $-8), SMH 2 (-0.5%, $-11), SPY 5 (+1.1%, $+56), TLT 2 (-1.0%, $-16), USO 1 (-10.0%, $-99), XBI 3 (+4.4%, $+117), XLE 5 (-19.8%, $-943), XLF 5 (-0.4%, $-23), XLI 1 (+0.3%, $+3), XLK 4 (+2.8%, $+107), XLU 2 (+0.4%, $+6), XLV 2 (+1.9%, $+33), XLY 2 (+2.2%, $+30)
+  VERDICT: FAIL (evidence, not proof)
+
+saved data/results/etf_branch/run_<capital>_trades.csv, candidates.csv, per_etf_signals.csv, summary.json

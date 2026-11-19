@@ -1,0 +1,16 @@
+pre-registration strategy/preregistered_etf_branch.md sha256 1220b9d95e36bec8
+
+index_branch inputs: 999,838 chain rows, 7 shock+guard entry days (11s)
+  A $ 2,500: 2 trades vs index_branch 2 -> IDENTICAL
+  A $ 5,000: 5 trades vs index_branch 5 -> IDENTICAL
+  A $10,000: 7 trades vs index_branch 7 -> IDENTICAL
+  A $25,000: 7 trades vs index_branch 7 -> IDENTICAL
+  B chain: 999,838 rows vs 999,838 -> IDENTICAL
+  B entry days: 7 vs 7 -> IDENTICAL
+  B $ 2,500: portfolio took 2 trades ['2025-05-22', '2025-10-13'] | index_branch 2 ['2025-05-22', '2025-10-13']
+  B $ 5,000: portfolio took 5 trades ['2024-12-20', '2025-10-13', '2025-11-21', '2026-02-13', '2026-07-30'] | index_branch 5 ['2024-12-20', '2025-10-13', '2025-11-21', '2026-02-13', '2026-07-30']
+  B $10,000: portfolio took 7 trades ['2024-12-20', '2025-05-22', '2025-08-04', '2025-10-13', '2025-11-21', '2026-02-13', '2026-07-30'] | index_branch 7 ['2024-12-20', '2025-05-22', '2025-08-04', '2025-10-13', '2025-11-21', '2026-02-13', '2026-07-30']
+
+  SPY shock days 2010-2026: fixed rule 325, relative-to-SPY scaling 325 (same by construction), absolute scaling by 1% would give 335
+
+VALIDATION: PASS

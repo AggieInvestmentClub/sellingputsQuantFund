@@ -1,0 +1,53 @@
+{
+ "2500": {
+  "trades": 54,
+  "per_year": 21.415309446254074,
+  "max_open": 3,
+  "max_open_risk_pct": 0.25744,
+  "big_losses": 2,
+  "Aug 2024 (carry unwind)": {
+   "trades": 2,
+   "pnl": 98.99999999999999
+  },
+  "Mar-Apr 2025 (tariffs)": {
+   "trades": 2,
+   "pnl": 11.3
+  }
+ },
+ "5000": {
+  "trades": 68,
+  "per_year": 26.85081081081081,
+  "max_open": 3,
+  "max_open_risk_pct": 0.29134,
+  "big_losses": 2,
+  "Aug 2024 (carry unwind)": {
+   "trades": 4,
+   "pnl": -237.24999999999997
+  },
+  "Mar-Apr 2025 (tariffs)": {
+   "trades": 2,
+   "pnl": 18.299999999999997
+  }
+ },
+ "10000": {
+  "trades": 72,
+  "per_year": 28.430270270270267,
+  "max_open": 3,
+  "max_open_risk_pct": 0.28556499999999996,
+  "big_losses": 2,
+  "Aug 2024 (carry unwind)": {
+   "trades": 4,
+   "pnl": -516.8000000000001
+  },
+  "Mar-Apr 2025 (tariffs)": {
+   "trades": 2,
+   "pnl": 46.09999999999999
+  }
+ },
+ "corr": {
+  "all": 0.37269028204378757,
+  "stress": 0.6146265712614517,
+  "equity_all": 0.49317276719817144,
+  "equity_stress": 0.7718132073717823
+ }
+}

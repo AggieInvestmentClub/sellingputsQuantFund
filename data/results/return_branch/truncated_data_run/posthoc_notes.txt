@@ -1,0 +1,22 @@
+POST-HOC (written after the scored FAIL; hindsight, not evidence)
+  2014: T10+guard|s0.20/l0.05|dte38|D  train CAGR +4.18% dd -2.6% n=22
+  2015: T10+guard|s0.20/l0.05|dte38|D  train CAGR +4.94% dd -2.6% n=30
+  2016: T10+guard|s0.20/l0.05|dte38|D  train CAGR +4.99% dd -2.6% n=36
+  2017: T10+guard|s0.20/l0.05|dte21|D  train CAGR +3.69% dd -9.3% n=44
+  2018: T10+guard|s0.20/l0.05|dte21|D  train CAGR +3.42% dd -9.3% n=47
+  2019: T10+guard|s0.20/l0.05|dte21|D  train CAGR +3.16% dd -9.3% n=49
+  2020: T10+guard|s0.20/l0.05|dte21|D  train CAGR +3.28% dd -9.3% n=53
+  2021: T10+guard|s0.20/l0.05|dte21|D  train CAGR +3.71% dd -9.3% n=61
+  2022: T10+guard|s0.20/l0.05|dte21|D  train CAGR +4.26% dd -9.3% n=73
+  2023: T10+guard|s0.15/l0.05|dte21|D  train CAGR +2.95% dd -6.8% n=80
+  2024: T10+guard|s0.15/l0.05|dte21|D  train CAGR +3.33% dd -6.8% n=90
+  2025: T10+guard|s0.15/l0.05|dte21|D  train CAGR +3.24% dd -6.8% n=93
+  2026: T10+guard|s0.15/l0.05|dte21|D  train CAGR +3.29% dd -6.8% n=100
+  guarded-only walk-forward (post-hoc)         CAGR +2.11%  maxDD -18.7%  worst month -14.9%  years+ 85%  trades/yr 6.2  max losses 0  worst trade -51%  max open risk 40%
+yearly {2014: 0.0799, 2015: 0.0528, 2016: -0.0867, 2017: 0.0155, 2018: 0.0115, 2019: 0.0434, 2020: 0.081, 2021: 0.1052, 2022: -0.1811, 2023: 0.0847, 2024: 0.0194, 2025: 0.0402, 2026: 0.0446}
+  scored pick 2023-2026 only (OOS years it was picked) CAGR +1.44%  maxDD  +0.0%  worst month  +0.0%  years+ 100%  trades/yr 2.1  max losses 0  worst trade +1%  max open risk 40%
+  2023-2026 total +20.2%
+  T10+guard|s0.15/l0.05|dte21|A 2014-2026 [hindsight] CAGR +1.73%  maxDD  -0.2%  worst month  +0.0%  years+ 100%  trades/yr 5.1  max losses 0  worst trade -2%  max open risk 10%
+  T10+guard|s0.15/l0.05|dte21|B 2014-2026 [hindsight] CAGR +1.90%  maxDD  -2.7%  worst month  -2.3%  years+ 92%  trades/yr 6.4  max losses 0  worst trade -27%  max open risk 30%
+  T10+guard|s0.15/l0.05|dte21|C 2014-2026 [hindsight] CAGR +3.48%  maxDD  -0.4%  worst month  +0.0%  years+ 100%  trades/yr 5.1  max losses 0  worst trade -2%  max open risk 20%
+  T10+guard|s0.15/l0.05|dte21|D 2014-2026 [hindsight] CAGR +3.76%  maxDD  -5.4%  worst month  -4.6%  years+ 92%  trades/yr 6.3  max losses 0  worst trade -27%  max open risk 40%

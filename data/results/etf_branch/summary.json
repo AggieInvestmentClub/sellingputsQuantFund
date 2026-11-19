@@ -1,0 +1,90 @@
+{
+  "prereg_sha": "1220b9d95e36bec8",
+  "2500": {
+    "n": 54,
+    "trades_per_year": 21.322702702702703,
+    "mean_ror": -0.043275700202940255,
+    "ci_lo": -0.10522549149359142,
+    "ci_hi": 0.005262498461277653,
+    "win": 0.2962962962962963,
+    "total_usd": -465.9,
+    "total_pct": -0.18636,
+    "per_year_usd": -183.9675405405405,
+    "per_year_pct": -0.07358701621621622,
+    "maxdd": -0.21333384984891923,
+    "worst_month": -0.09855999999999998,
+    "same_week_share": 0.42592592592592593,
+    "yearly_usd": {
+      "2024": -165.0,
+      "2025": -221.75,
+      "2026": -79.15
+    },
+    "checks": {
+      "1 mean ror > 0, week-clustered 95% interval above 0": false,
+      "2 account positive over the period": false,
+      "3 max drawdown better than -30%": true,
+      "4 worst month better than -25%": true
+    },
+    "verdict": "FAIL",
+    "skipped_by_cap": 0,
+    "candidates": 88
+  },
+  "5000": {
+    "n": 68,
+    "trades_per_year": 26.85081081081081,
+    "mean_ror": -0.029774393023975932,
+    "ci_lo": -0.07962404661889708,
+    "ci_hi": 0.008445826985334904,
+    "win": 0.5,
+    "total_usd": -989.6000000000018,
+    "total_pct": -0.19792000000000037,
+    "per_year_usd": -390.758270270271,
+    "per_year_pct": -0.07815165405405419,
+    "maxdd": -0.21059622490762053,
+    "worst_month": -0.09605999999999999,
+    "same_week_share": 0.5294117647058824,
+    "yearly_usd": {
+      "2024": -730.15,
+      "2025": -187.25,
+      "2026": -72.2
+    },
+    "checks": {
+      "1 mean ror > 0, week-clustered 95% interval above 0": false,
+      "2 account positive over the period": false,
+      "3 max drawdown better than -30%": true,
+      "4 worst month better than -25%": true
+    },
+    "verdict": "FAIL",
+    "skipped_by_cap": 16,
+    "candidates": 102
+  },
+  "10000": {
+    "n": 72,
+    "trades_per_year": 28.430270270270267,
+    "mean_ror": -0.018847112425953723,
+    "ci_lo": -0.06637210974002383,
+    "ci_hi": 0.017368841558179478,
+    "win": 0.7083333333333334,
+    "total_usd": -1198.9000000000008,
+    "total_pct": -0.11989000000000008,
+    "per_year_usd": -473.40348648648677,
+    "per_year_pct": -0.047340348648648674,
+    "maxdd": -0.1555632996465377,
+    "worst_month": -0.09412999999999998,
+    "same_week_share": 0.5555555555555556,
+    "yearly_usd": {
+      "2024": -1415.2,
+      "2025": -29.9,
+      "2026": 246.2
+    },
+    "checks": {
+      "1 mean ror > 0, week-clustered 95% interval above 0": false,
+      "2 account positive over the period": false,
+      "3 max drawdown better than -30%": true,
+      "4 worst month better than -25%": true
+    },
+    "verdict": "FAIL",
+    "skipped_by_cap": 24,
+    "candidates": 110
+  }
+}
