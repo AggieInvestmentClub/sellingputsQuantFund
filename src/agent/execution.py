@@ -130,6 +130,45 @@ def take_profit_price(credit, opened, expiry, today, tick=0.01, **tp):
     return {"limit": round(px, 2), "keep_pct": need, "time_used": elapsed, "days_held": held, "dte_entry": dte}
 
 
+def spread_market(sb, sa, lb, la):
+    """the put spread's own market per share: bid = short bid - long ask, ask = short ask - long bid"""
+    bid, ask = sb - la, sa - lb
+    return {"bid": bid, "ask": ask, "mid": (bid + ask) / 2, "width": ask - bid}
+
+
+def resting_take_profit(credit, opened, expiry, today, sb=None, sa=None, lb=None, la=None, tick=0.01,
+                        min_price=0.01, wide=0.5, **tp):
+    """
+    [AG-51] the resting buy-to-close order for today, safe on cheap $2-$5 spreads:
+      - never rests below min_price ($0.01): if the rule's price rounds below it (tiny credits), no resting
+        order ("hold": let trade_desk.py manage handle expiry) instead of a $0.00 order that cannot fill
+      - with today's quotes: if the spread's natural (ask) price already satisfies the rule, say "close now"
+        at the natural price (the take-profit fired; resting below it only risks missing it)
+      - "wide market" warning when the spread's bid-ask width is more than `wide` x its mid (the resting price
+        may sit far from where it can trade; never chase above the rule's price)
+    returns dict: limit (or None), action ("rest" / "close now" / "hold"), warning, plus take_profit_price fields;
+    None on/after expiry day.
+    """
+    t = take_profit_price(credit, opened, expiry, today, tick, **tp)
+    if t is None:
+        return None
+    out = {**t, "action": "rest", "warning": ""}
+    if t["limit"] < min_price - EPS:
+        out.update(limit=None, action="hold",
+                   warning=f"credit {credit:.2f} too small: the take-profit price ({t['limit']:.2f}) is below "
+                           f"${min_price:.2f}, no resting order; hold and manage at expiry")
+        return out
+    if None not in (sb, sa, lb, la):
+        m = spread_market(sb, sa, lb, la)
+        out.update({"mkt_bid": round(m["bid"], 4), "mkt_ask": round(m["ask"], 4), "mkt_mid": round(m["mid"], 4)})
+        if m["mid"] > 0 and m["width"] > wide * m["mid"]:
+            out["warning"] = (f"wide market: spread bid {m['bid']:.2f} / ask {m['ask']:.2f} (width "
+                              f"{m['width']:.2f} > {wide:.0%} of mid {m['mid']:.2f}); keep the resting limit, do not chase")
+        if m["ask"] <= t["limit"] + EPS:
+            out.update(action="close now", limit=round(max(_round(m["ask"], tick, up=True), min_price), 2))
+    return out
+
+
 # ---------------------------------------------------------------- AG-39 fills
 def fill_quality(fill, mid, natural, side="open"):
     """[AG-39] realized FILL: 0 = filled at the mid, 1 = at the natural (worst) price, < 0 = better than mid.

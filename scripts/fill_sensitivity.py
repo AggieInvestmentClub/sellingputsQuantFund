@@ -23,18 +23,15 @@ END = pd.Timestamp("2026-11-18")
 
 def run(f, by, ix, spot, capital, fill, risk=0.10):
     IB.FILL = fill
-    budget = capital * risk
-    W = int(budget // 100)
-    struct = (0.10, ("delta", 0.03)) if W >= 15 else (0.10, ("abs", float(W)))
+    budget, W, struct = IB.capital_structure(capital, risk)          # capital rule v2 (AG-28f)
     rows = [IB.trade(d, by, ix, spot, struct, "tp") for d in IB.entry_dates(f, "shock+guard")]
     t = pd.DataFrame([r for r in rows if r])
-    if W < 15:
-        t = t[(t["width"] - t["credit"]) * 100 <= budget * 1.15]
+    t = IB.within_budget(t, budget)
     raw, acct = IB.stats(t, risk), IB.stats(IB.one_open(t), risk)
     o = IB.one_open(t)
     yrs = (END - pd.Timestamp("2010-01-01")).days / 365.25
     recent = o[o["date"] >= "2024-01-01"]
-    return {"capital": capital, "width": "0.03d" if W >= 15 else f"${W}", "fill": fill, "n": raw["n"],
+    return {"capital": capital, "width": f"${W}|0.03d", "fill": fill, "n": raw["n"],
             "mean": raw["mean"], "ci_lo": raw["ci_lo"], "ci_hi": raw["ci_hi"], "win": raw["win"],
             "acct_total": acct["total"], "per_year_$": acct["total"] * capital / yrs,
             "per_year_%": acct["total"] / yrs, "since_2024_$": float((recent["ror_net"] * budget).sum()),

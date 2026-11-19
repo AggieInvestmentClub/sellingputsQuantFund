@@ -187,3 +187,47 @@ def _drop_late_ids(news, date):
     d = news["storyId"].astype(str).str.extract(r":(\d{8}):")[0]
     late = d.notna() & (d > pd.Timestamp(date).strftime("%Y%m%d"))
     return news[~late].reset_index(drop=True)
+
+
+GENERIC_FIRST = {"American", "General", "United", "National", "First", "International", "Global", "Southern",
+                 "Northern", "Western", "Eastern", "Public", "Royal", "Consolidated", "Federal", "Republic",
+                 "Universal", "Digital", "Advanced", "Applied", "Allied", "Equity", "Realty", "Energy", "Health",
+                 "Capital", "Financial", "Data", "Simon", "Lincoln", "Franklin", "Mosaic", "Target", "Gap", "Ball",
+                 "Visa", "Best", "Dollar", "Discovery", "Progressive", "Prudential", "Principal", "Regions",
+                 "Waters", "Masco", "Corning", "Hess", "Quest", "Match", "Fox", "News", "Paramount"}
+
+
+def peer_names(master, exclude_ric=None, min_len=5):
+    """
+    [AG-49] names of the OTHER companies in the universe (security_master), for the v2 prompt to scrub
+    ("Wolfspeed" -> "[another company]"): a peer's name next to the industry can identify the stock.
+    Core names without legal suffixes, >= min_len characters, generic one-word cores left out (they are
+    ordinary words: "Target", "Visa", "Gap"). Matched case-sensitively in llm.anonymize_strict.
+    """
+    from src.agent.llm import company_aliases
+    out = set()
+    if master is None or "name" not in master:
+        return ()
+    for r in master.itertuples():
+        if r.ric == exclude_ric or not isinstance(r.name, str):
+            continue
+        for a in company_aliases(r.name):
+            if len(a) < min_len or a.isupper() or a in GENERIC_FIRST:
+                continue
+            if " " not in a and a.split()[0] in GENERIC_FIRST:
+                continue
+            out.add(a)
+    return tuple(sorted(out))
+
+
+def known_names(raw, ric):
+    """
+    [AG-49] product, brand and executive names for one company from data/raw/reference/names.parquet
+    (columns ric, name, kind) if that file exists; it does not yet (no LSEG field pulled), so this returns ()
+    and v2 relies on the title-based executive scrub (llm.scrub_people).
+    """
+    p = Path(raw) / "reference" / "names.parquet"
+    if not p.exists():
+        return ()
+    n = pd.read_parquet(p)
+    return tuple(n.loc[n["ric"] == ric, "name"].dropna().astype(str))

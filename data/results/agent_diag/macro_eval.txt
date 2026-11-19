@@ -1,0 +1,13 @@
+MACRO CLASSIFIER (AG-54, prototype, descriptive): 42 SPY shock days 2024-04-01..2026-10-28
+  systemic/liquidity break     n= 21  SPY next 21d mean +4.64%  worst-close mean -4.11%  worst -11.77%
+  tradeable VRP dislocation    n=  4  SPY next 21d mean +2.03%  worst-close mean -2.02%  worst -8.09%
+  unclear                      n= 17  SPY next 21d mean +3.30%  worst-close mean -1.67%  worst -5.54%
+
+Index-branch entries ($10k, capital v2) since 2024-04-01: 7
+  2024-12-20  tradeable VRP dislocation    ror +0.54%  (no flags)
+  2025-05-22  tradeable VRP dislocation    ror +0.14%  (no flags)
+  2025-08-04  tradeable VRP dislocation    ror +1.87%  (no flags)
+  2025-10-13  tradeable VRP dislocation    ror +2.84%  (no flags)
+  2025-11-21  tradeable VRP dislocation    ror -0.50%  (no flags)
+  2026-02-13  tradeable VRP dislocation    ror -0.41%  (no flags)
+  2026-07-30  tradeable VRP dislocation    ror +1.23%  (no flags)

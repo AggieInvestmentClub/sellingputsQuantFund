@@ -1,18 +1,18 @@
-$  2,500     $2 fill=1.0  n= 35 mean=+0.97% [+0.06%, +1.80%] win=80% account +2.7% = $4/yr (+0.16%/yr) | since 2024 $-32 | avg credit $9
-$  2,500     $2 fill=0.5  n= 37 mean=+1.71% [+0.88%, +2.47%] win=92% account +5.5% = $8/yr (+0.32%/yr) | since 2024 $-22 | avg credit $10
-$  2,500     $2 fill=0.25 n= 38 mean=+2.54% [+1.98%, +3.13%] win=95% account +8.8% = $13/yr (+0.52%/yr) | since 2024 $+29 | avg credit $10
-$  2,500     $2 fill=0.0  n= 38 mean=+3.47% [+2.80%, +4.20%] win=100% account +12.5% = $19/yr (+0.74%/yr) | since 2024 $+85 | avg credit $11
-$  5,000     $5 fill=1.0  n= 43 mean=+1.85% [+1.21%, +2.46%] win=88% account +7.4% = $22/yr (+0.44%/yr) | since 2024 $-28 | avg credit $20
-$  5,000     $5 fill=0.5  n= 45 mean=+2.48% [+2.02%, +2.96%] win=93% account +10.7% = $32/yr (+0.63%/yr) | since 2024 $+38 | avg credit $22
-$  5,000     $5 fill=0.25 n= 45 mean=+2.80% [+2.37%, +3.28%] win=98% account +12.3% = $36/yr (+0.73%/yr) | since 2024 $+79 | avg credit $23
-$  5,000     $5 fill=0.0  n= 45 mean=+3.14% [+2.71%, +3.62%] win=100% account +13.9% = $41/yr (+0.83%/yr) | since 2024 $+120 | avg credit $24
-$ 10,000    $10 fill=1.0  n= 46 mean=+2.09% [+1.72%, +2.48%] win=96% account +9.0% = $53/yr (+0.53%/yr) | since 2024 $+57 | avg credit $36
-$ 10,000    $10 fill=0.5  n= 46 mean=+2.40% [+2.05%, +2.76%] win=100% account +10.5% = $62/yr (+0.62%/yr) | since 2024 $+138 | avg credit $37
-$ 10,000    $10 fill=0.25 n= 46 mean=+2.56% [+2.21%, +2.92%] win=100% account +11.3% = $67/yr (+0.67%/yr) | since 2024 $+178 | avg credit $38
-$ 10,000    $10 fill=0.0  n= 46 mean=+2.72% [+2.36%, +3.08%] win=100% account +12.0% = $71/yr (+0.71%/yr) | since 2024 $+219 | avg credit $39
-$ 25,000  0.03d fill=1.0  n= 46 mean=+1.84% [+1.64%, +2.04%] win=100% account +7.8% = $116/yr (+0.46%/yr) | since 2024 $+230 | avg credit $61
-$ 25,000  0.03d fill=0.5  n= 46 mean=+1.97% [+1.78%, +2.16%] win=100% account +8.4% = $125/yr (+0.50%/yr) | since 2024 $+265 | avg credit $62
-$ 25,000  0.03d fill=0.25 n= 46 mean=+2.03% [+1.85%, +2.22%] win=100% account +8.7% = $129/yr (+0.52%/yr) | since 2024 $+283 | avg credit $63
-$ 25,000  0.03d fill=0.0  n= 46 mean=+2.10% [+1.92%, +2.29%] win=100% account +9.0% = $134/yr (+0.53%/yr) | since 2024 $+300 | avg credit $64
+$  2,500 $2|0.03d fill=1.0  n= 35 mean=+0.97% [+0.06%, +1.80%] win=80% account +2.7% = $4/yr (+0.16%/yr) | since 2024 $-32 | avg credit $9
+$  2,500 $2|0.03d fill=0.5  n= 37 mean=+1.71% [+0.88%, +2.47%] win=92% account +5.5% = $8/yr (+0.32%/yr) | since 2024 $-22 | avg credit $10
+$  2,500 $2|0.03d fill=0.25 n= 38 mean=+2.54% [+1.98%, +3.13%] win=95% account +8.8% = $13/yr (+0.52%/yr) | since 2024 $+29 | avg credit $10
+$  2,500 $2|0.03d fill=0.0  n= 38 mean=+3.47% [+2.80%, +4.20%] win=100% account +12.5% = $19/yr (+0.74%/yr) | since 2024 $+85 | avg credit $11
+$  5,000 $5|0.03d fill=1.0  n= 43 mean=+1.85% [+1.21%, +2.46%] win=88% account +7.4% = $22/yr (+0.44%/yr) | since 2024 $-28 | avg credit $20
+$  5,000 $5|0.03d fill=0.5  n= 45 mean=+2.48% [+2.02%, +2.96%] win=93% account +10.7% = $32/yr (+0.63%/yr) | since 2024 $+38 | avg credit $22
+$  5,000 $5|0.03d fill=0.25 n= 45 mean=+2.80% [+2.37%, +3.28%] win=98% account +12.3% = $36/yr (+0.73%/yr) | since 2024 $+79 | avg credit $23
+$  5,000 $5|0.03d fill=0.0  n= 45 mean=+3.14% [+2.71%, +3.62%] win=100% account +13.9% = $41/yr (+0.83%/yr) | since 2024 $+120 | avg credit $24
+$ 10,000 $10|0.03d fill=1.0  n= 46 mean=+2.14% [+1.77%, +2.53%] win=96% account +9.2% = $55/yr (+0.55%/yr) | since 2024 $+57 | avg credit $35
+$ 10,000 $10|0.03d fill=0.5  n= 46 mean=+2.46% [+2.12%, +2.82%] win=100% account +10.8% = $64/yr (+0.64%/yr) | since 2024 $+138 | avg credit $37
+$ 10,000 $10|0.03d fill=0.25 n= 46 mean=+2.62% [+2.28%, +2.98%] win=100% account +11.6% = $69/yr (+0.69%/yr) | since 2024 $+178 | avg credit $38
+$ 10,000 $10|0.03d fill=0.0  n= 46 mean=+2.79% [+2.44%, +3.14%] win=100% account +12.4% = $73/yr (+0.73%/yr) | since 2024 $+219 | avg credit $39
+$ 25,000 $25|0.03d fill=1.0  n= 46 mean=+1.95% [+1.75%, +2.16%] win=100% account +8.4% = $124/yr (+0.50%/yr) | since 2024 $+315 | avg credit $55
+$ 25,000 $25|0.03d fill=0.5  n= 46 mean=+2.11% [+1.91%, +2.31%] win=100% account +9.1% = $135/yr (+0.54%/yr) | since 2024 $+380 | avg credit $57
+$ 25,000 $25|0.03d fill=0.25 n= 46 mean=+2.19% [+2.00%, +2.39%] win=100% account +9.5% = $141/yr (+0.56%/yr) | since 2024 $+413 | avg credit $57
+$ 25,000 $25|0.03d fill=0.0  n= 46 mean=+2.28% [+2.08%, +2.47%] win=100% account +9.9% = $147/yr (+0.59%/yr) | since 2024 $+446 | avg credit $58
 
 saved data/results/index_branch/fill_sensitivity.csv

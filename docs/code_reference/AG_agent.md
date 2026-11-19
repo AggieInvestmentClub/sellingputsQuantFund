@@ -133,3 +133,59 @@ toward the mid; skips if credit after fees <= min). AG-38 take_profit_price(): b
 today (credit x (1 - clip(time used + 0.20, 0.50, 0.75)), rounded down) for a resting order, re-placed daily.
 AG-39 fills.csv + realized fill quality (0 = mid, 1 = worst, same scale as index_branch FILL) and its $/yr from
 fill_sensitivity.csv. AG-40 ticket(): plain-text combo order for a teammate to approve and place. Tests: tests/test_execution.py.
+
+### AG-17q  trade_desk.py index (QUARANTINED)
+The weekly XSP 0.15-delta $1-wide spread failed strategy/preregistered_spy.md. `trade_desk.py index` exits with
+DEPRECATED unless `--i-know-this-failed` (research only, output labelled); `index_plan()` raises unless
+`_allow_deprecated=True`. Use scripts/index_signal.py.
+
+### AG-28f  index_branch.capital_structure / within_budget / --stage capital_v2
+Capital rule v2 (strategy/preregistered_capital_fix.md, sha 0843ea5b32fc279a): long leg = narrower of $W below the
+short and the 0.03-delta put; max loss <= 1.15 x 10% of capital at EVERY size (v1 skipped the check at W >= 15 and
+risked 16-22% at $25,000 in 2024-26). 2010-2026: $2,500 / $5,000 / $10,000 / $25,000 all PASS the 4 checks.
+
+### AG-33..36  scripts/etf_branch.py  (ETF branch: the index rule on 29 liquid ETFs, OPRA 2024-04..2026-10)
+AG-33 per-ETF chains from data/processed/options/etf (root regex; half-spread max($0.01,5%) SPY/QQQ/IWM, max($0.02,10%) others).
+AG-34 shock scaled by sigma_ETF/sigma_SPY (252-day, adjusted closes; SPY = the fixed rule), 200-day trend + 9d/30d IV guard.
+AG-35 trade: short ~0.10 delta, long = narrower of (short - W) and the 0.03-delta put, W = floor(capital x 10% / 100).
+AG-36 portfolio: one spread per ETF, 10% risk per trade, 30% open-risk cap, week-clustered bootstrap; 4 checks in
+strategy/preregistered_etf_branch.md (sha 1220b9d95e36bec8). Result 2026-11-19: FAIL at $2.5k/$5k/$10k
+(mean return on risk -4.3% / -3.0% / -1.9%). AG-36b scripts/etf_correlation.py: frequency, stress windows, correlation.
+
+### AG-41..45  scripts/return_branch.py  (higher-return SPY family, account-level walk-forward)
+144 candidates (shock -1.5%/-1.0%, guard on/off, short 0.10/0.15/0.20, 7-14/14-35/30-45 DTE, 10%/20% risk, up to 3 open),
+pre-registered in strategy/preregistered_return_branch.md (sha 8a48b4d403e0b7fd). Walk-forward 2014-2026 picks by prior-year
+CAGR under drawdown limits. Result: FAIL (CAGR +0.83% vs +0.85% current, max DD -31%, 69% years positive; PBO 0.37).
+
+### AG-46  src/agent/llm.py  call_llm resilience
+Retries connection errors, timeouts, 429/5xx and unreadable bodies with exponential backoff + jitter; CircuitBreaker
+(open after 4 straight failures, 5-min cool-down, half-open trial; cache still served); LLMUnavailable; safe_call_llm
+never raises and logs to data/results/agent/llm_failures.log -> verdict "unavailable" -> never a TAKE. Used by run_agent.py.
+### AG-47  llm.extract_json / parse_verdict / screen.parse_agent
+JSON found inside fences, text, <answer>, trailing commas, truncated or escaped answers; verdict spelling normalized;
+missing impact -> NaN instead of rejecting the answer.
+### AG-48  llm.anonymize_strict (v2)
+Case-safe tickers and one-word names (v1 wiped words like "on" for ticker ON: 73 shocks), other RICs -> [ticker],
+peers -> [another company], titled people -> [name], $ figures -> buckets vs market value, size band instead of $B.
+### AG-49  evidence.peer_names / known_names
+Other universe company names for the v2 scrub (2,555); optional reference/names.parquet for products and executives.
+### AG-50  screen v2 (ag-v2)
+<impairment>, <shock_type>, <vol_context>, <overreaction> then <answer> JSON (impact as % of value); tolerant
+parser; llm_kwargs("ag-v2") turns JSON mode off. v1 stays the default (`run_agent.py --version ag-v2` to use v2).
+### AG-51  execution.resting_take_profit
+Never below $0.01 ("hold"), "close now" when the natural price meets the rule, wide-market warning (width > 50% of mid).
+### AG-52  order_desk XSP default
+SPY prints an early-assignment warning; tp accepts today's quotes.
+### AG-53  agent_diag.py --ablation
+Pre-registered (strategy/preregistered_agent_ablation.md, sha b0cf3c86e503460b), post-cutoff only, week-clustered
+bootstrap, deflated Sharpe (10 trials). H1, H2, H3 all FAIL (hold-out n = 4 / 18 / 4).
+### AG-54  src/agent/macro.py (prototype, descriptive)
+Systemic/liquidity break vs tradeable VRP dislocation vs unclear from SPY trend/drawdown/vol, IV term structure,
+HYG credit, TLT/GLD dash-for-cash; LLM step can only add caution. agent_diag.py --macro; printed by daily.py. Not a trading rule.
+
+### AG-56..60  scripts/portfolio_overlay.py  (idle cash in T-bills, fill model, tail stress)
+Pre-registered in strategy/preregistered_portfolio_overlay.md (sha e627dcaa03c6777d). AG-56 capital-v2 trades at several
+fills; AG-57 daily account (idle cash earns US3MT=RR act/360, collateral = max loss earns nothing); AG-58 fill model (50%
+quarter-from-mid, 35% halfway, 15% unfilled, 1,000 runs); AG-59 checks vs T-bills only incl. deflated Sharpe (200 trials);
+AG-60 tail stress (Jeffreys posterior on the full-loss rate; guard-off crash trades). Result: FAIL at every size on the
+deflated Sharpe check (best $25,000: 0.93 < 0.95); $10,000 and $25,000 pass the other three.

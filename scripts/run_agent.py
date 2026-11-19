@@ -29,9 +29,10 @@ import pandas as pd
 
 from src.agent.evidence import (abnormal_on, earnings_context, event_news, load_close, market_cap_before,
                                 members_on, peer_context, price_context)
-from src.agent.screen import AGENT_VERSION, build_agent_prompt, final_call, parse_agent
+from src.agent.screen import AGENT_VERSION, build_agent_prompt, final_call, llm_kwargs, parse_agent
 from src.agent.valuation import gate, valuation_context, valuation_lines
-from src.agent.llm import TAMU_BASE_URL, call_llm, company_aliases
+from src.agent.llm import TAMU_BASE_URL, company_aliases, safe_call_llm
+from src.agent.evidence import peer_names
 
 try:
     from dotenv import load_dotenv
@@ -54,7 +55,8 @@ def model_settings(provider=None, model=None):
 class Agent:
     """loads the reference tables once; screen() runs one shock"""
 
-    def __init__(self, data_root="data", provider=None, model=None, dry_run=False, fv_gate=False):
+    def __init__(self, data_root="data", provider=None, model=None, dry_run=False, fv_gate=False, version=AGENT_VERSION):
+        self.version = version
         root = Path(data_root)
         self.raw, self.out = root / "raw", root / "results" / "agent"
         self.cache = self.out / "cache"
@@ -97,24 +99,28 @@ class Agent:
         industry = self.gics_ix.loc[ric, "industry"] if ric in self.gics_ix.index else None
         val = valuation_context(self.raw, ric, date, self.gics, members_on(self.master, date))
         fv_ok, fv_why = gate(val)
+        v2 = self.version != AGENT_VERSION
         msgs, facts = build_agent_prompt(heads, stories, company_aliases(name, ticker, ric, root),
                                          sector, industry, cap, abnormal, price, peers, earn,
-                                         valuation_lines(val) if val else None)
+                                         valuation_lines(val) if val else None, version=self.version,
+                                         **({"peer_names": peer_names(self.master, ric)} if v2 else {}))
         row = {"event_id": f"{ric}|{date:%Y-%m-%d}", "ric": ric, "date": date.date(), "name": name,
                "abnormal": abnormal, "market_cap": cap, "has_news": len(heads) > 0,
                "post_cutoff": None if self.cutoff is None else bool(date > self.cutoff),
                "ret_21d_before": price and price["ret_21d"], "peer_median": peers and peers["median"],
-               "next_earnings_in_window": earn["next_in_window"], "agent_version": AGENT_VERSION,
+               "next_earnings_in_window": earn["next_in_window"], "agent_version": self.version,
                **({f"val_{k}": v for k, v in val.items()} if val else {}), "fv_pass": fv_ok, "fv_why": "; ".join(fv_why)}
         if self.dry_run:
             return {**row, "status": "dry-run", "prompt": msgs[1]["content"]}
-        res = call_llm(msgs, self.cache, self.model, self.key, self.base, max_tokens=900)
-        p = parse_agent(res["content"])
+        # [AG-46] retries + circuit breaker; endpoint down -> content None -> verdict "unavailable" -> no TAKE
+        res = safe_call_llm(msgs, self.cache, self.model, self.key, self.base, context=row["event_id"],
+                            **llm_kwargs(self.version))
+        p = parse_agent(res["content"], version=self.version, market_cap=cap)
         call = final_call(p, abnormal, cap, earn, fv_fail="; ".join(fv_why) if (self.fv_gate and not fv_ok) else None)
         return {**row, **call, "decision": p["decision"], "verdict": p["verdict"], "confidence": p["confidence"],
                 "impact_mid": p["impact_mid"], "market_read": p["market_read"], "key_risk": p["key_risk"],
-                "reason": p["reason"], "parse_ok": p["parse_ok"], "model": res["model"], "cached": res["cached"],
-                "status": "ok"}
+                "reason": p["reason"], "parse_ok": p["parse_ok"], "model": res.get("model"), "cached": res.get("cached"),
+                "status": "llm-unavailable" if res.get("unavailable") else "ok"}
 
 
 def main():
@@ -129,9 +135,11 @@ def main():
     ap.add_argument("--date")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--fv-gate", action="store_true", help="let the fair-value gate (AG-15) veto a TAKE")
+    ap.add_argument("--version", choices=["ag-v1", "ag-v2"], default=AGENT_VERSION,
+                    help="prompt version: ag-v1 (default, cached results comparable) or ag-v2 (AG-50 structured)")
     args = ap.parse_args()
 
-    agent = Agent(args.data_root, args.provider, args.model, args.dry_run, args.fv_gate)
+    agent = Agent(args.data_root, args.provider, args.model, args.dry_run, args.fv_gate, args.version)
     agent.out.mkdir(parents=True, exist_ok=True)
 
     if args.ric:

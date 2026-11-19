@@ -62,6 +62,14 @@ def main():
     # The weekly XSP spread (trade_desk index) FAILED its tests (strategy/preregistered_spy.md, 2010-2023),
     # so the index step is now the tested index-branch signal (strategy/preregistered_index_branch.md).
     run(["scripts/index_signal.py", "--capital", str(a.capital)])
+    try:   # [AG-54] macro regime, information only (prototype; not a trading rule)
+        from src.agent import macro as M
+        px = M.load_closes()
+        d = px.index[-1]
+        c = M.classify(M.macro_features(px, d))
+        print(f"\nMacro regime {d:%Y-%m-%d} (AG-54 prototype, information only): {c['label']} - {'; '.join(c['reasons'])}")
+    except Exception as e:  # noqa: BLE001
+        print(f"\n(macro regime unavailable: {e})")
     run(["scripts/order_desk.py", "tp"])   # AG-38: resting buy-to-close limits for open spreads (re-place each morning)
     print("On an ENTRY SIGNAL: scripts/order_desk.py open --underlying XSP --expiry YYYY-MM-DD --short K --long K "
           f"--sb .. --sa .. --lb .. --la .. --capital {a.capital:.0f}   (limit-ladder ticket; then log the fill with "

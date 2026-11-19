@@ -44,7 +44,18 @@ def save_ticket(tid, side, text):
     return p
 
 
+SPY_WARNING = ("  WARNING: SPY options are American-style and can be ASSIGNED EARLY (shares, pin risk at expiry). "
+               "Use XSP (European, cash-settled) unless a teammate decided otherwise.")
+
+
+def warn_underlying(a):
+    """[AG-52] the default underlying is XSP; SPY gets an early-assignment warning"""
+    if str(getattr(a, "underlying", "") or "").upper() == "SPY":
+        print(SPY_WARNING)
+
+
 def cmd_open(a):
+    warn_underlying(a)
     lad = X.ladder(a.sb, a.sa, a.lb, a.la, "open", a.steps, a.wait, a.max_concession, a.tick, a.min_credit)
     width = a.short - a.long
     if a.qty:
@@ -78,6 +89,7 @@ def open_row(a):
 
 
 def cmd_close(a):
+    warn_underlying(a)
     lad = X.ladder(a.sb, a.sa, a.lb, a.la, "close", a.steps, a.wait, a.max_concession, a.tick, max_debit=a.max_debit)
     row = open_row(a)
     tid = a.trade_id or trade_id(a, row["opened"] if row else None)
@@ -102,17 +114,27 @@ def cmd_tp(a):
             return
     print(f"Resting take-profit orders for {today.date()} (buy-to-close LIMIT, DAY; re-place each morning, "
           f"the price rises as time passes):")
+    q = {k: getattr(a, k, None) for k in ("sb", "sa", "lb", "la")} if a.credit is not None else {}
     for r in rows:
-        tp = X.take_profit_price(float(r["credit"]), r["opened"], r["expiry"], today, a.tick)
+        if str(r.get("ric", "")).upper() == "SPY":
+            print(SPY_WARNING)
+        tp = X.resting_take_profit(float(r["credit"]), r["opened"], r["expiry"], today, tick=a.tick, **q)
         tomorrow = X.take_profit_price(float(r["credit"]), r["opened"], r["expiry"], today + pd.Timedelta(days=1), a.tick)
         legs = f"{r['ric']} {float(r['short_strike']):g}/{float(r['long_strike']):g} exp {pd.Timestamp(r['expiry']).date()}"
         if tp is None:
             print(f"  {legs}: expiry day or later -> no take-profit; use trade_desk.py manage (expire / buy back)")
             continue
         n = int(r["contracts"])
-        print(f"  {legs}: BUY TO CLOSE {n} at {tp['limit']:.2f} or less (keeps {tp['keep_pct']:.0%} of the "
+        if tp["action"] == "hold":
+            print(f"  {legs}: NO RESTING ORDER - {tp['warning']}")
+            continue
+        verb = "BUY TO CLOSE NOW (take-profit already reached at the natural price):" if tp["action"] == "close now" \
+            else "BUY TO CLOSE"
+        print(f"  {legs}: {verb} {n} at {tp['limit']:.2f} or less (keeps {tp['keep_pct']:.0%} of the "
               f"{float(r['credit']):.2f} credit = ${(float(r['credit']) - tp['limit']) * 100 * n:,.0f}; "
-              f"time used {tp['time_used']:.0%})" + (f"; tomorrow {tomorrow['limit']:.2f}" if tomorrow else ""))
+              f"time used {tp['time_used']:.0%})" + (f"; tomorrow {tomorrow['limit']:.2f}" if tomorrow and tomorrow['limit'] >= 0.01 else ""))
+        if tp["warning"]:
+            print(f"    {tp['warning']}")
     print("  A TEAMMATE MUST APPROVE each order. Nothing here sends orders.")
 
 
@@ -209,6 +231,8 @@ def main():
     pt.add_argument("--short", type=float)
     pt.add_argument("--long", type=float)
     pt.add_argument("--qty", type=int)
+    for k, h in (("sb", "short bid"), ("sa", "short ask"), ("lb", "long bid"), ("la", "long ask")):
+        pt.add_argument(f"--{k}", type=float, help=f"optional, with --credit: today's {h} (wide-market check)")
     pt.set_defaults(fn=cmd_tp)
 
     pf = sub.add_parser("fill", help="log a broker fill")

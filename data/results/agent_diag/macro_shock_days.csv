@@ -1,0 +1,43 @@
+date,label,n_flags,flags,fwd_ret,fwd_worst
+2024-04-15,unclear,1,inverted term structure (9-day IV 17% > 30-day 16%),0.03736742987412023,-0.01841609673902267
+2024-04-30,systemic/liquidity break,2,"inverted term structure (9-day IV 15% > 30-day 13%); dash for cash: SPY -1.6%, bonds -0.8% and gold -2.0% all down",0.04109725487071203,-0.003247141320371294
+2024-07-24,systemic/liquidity break,2,"inverted term structure (9-day IV 16% > 30-day 14%); dash for cash: SPY -2.3%, bonds -1.1% and gold -0.4% all down",0.02769617353066156,-0.044066293442713844
+2024-07-25,unclear,1,inverted term structure (9-day IV 18% > 30-day 16%),0.04405564532605277,-0.039059452833342556
+2024-08-02,unclear,1,inverted term structure (9-day IV 20% > 30-day 20%),0.035991743291424294,-0.029123662976168085
+2024-08-05,unclear,1,inverted term structure (9-day IV 26% > 30-day 23%),0.06488461092427245,0.0
+2024-09-03,unclear,1,inverted term structure (9-day IV 17% > 30-day 16%),0.030394145775974435,-0.021228807419214624
+2024-09-06,tradeable VRP dislocation,0,,0.05078096084092065,0.0
+2024-10-31,unclear,1,inverted term structure (9-day IV 22% > 30-day 18%),0.061532779966235296,0.0
+2024-12-18,systemic/liquidity break,3,"inverted term structure (9-day IV 24% > 30-day 20%); credit stress: HYG -2.1% over 5 days; dash for cash: SPY -3.0%, bonds -1.6% and gold -1.9% all down",0.034386300061404196,-0.009875827249778202
+2024-12-19,unclear,1,inverted term structure (9-day IV 20% > 30-day 18%),0.04035147585736221,-0.009571745435932422
+2025-01-10,unclear,1,inverted term structure (9-day IV 17% > 30-day 16%),0.04275698117107951,0.0
+2025-02-21,tradeable VRP dislocation,0,,-0.043104310431043125,-0.080874754142081
+2025-02-27,systemic/liquidity break,2,"inverted term structure (9-day IV 20% > 30-day 18%); dash for cash: SPY -1.6%, bonds -0.7% and gold -1.5% all down",-0.05023502264763691,-0.05748226647295107
+2025-03-03,unclear,1,inverted term structure (9-day IV 22% > 30-day 19%),-0.039056477722390626,-0.05541566027716405
+2025-03-04,unclear,1,inverted term structure (9-day IV 23% > 30-day 20%),-0.021391672156155783,-0.0441008216898382
+2025-03-06,systemic/liquidity break,2,"inverted term structure (9-day IV 24% > 30-day 22%); dash for cash: SPY -1.8%, bonds -0.3% and gold -0.5% all down",-0.11773847147771133,-0.11773847147771133
+2025-03-10,systemic/liquidity break,2,SPY -2.0% vs its 200-day average (downtrend); inverted term structure (9-day IV 27% > 30-day 24%),-0.11434585607763392,-0.11434585607763392
+2025-03-11,systemic/liquidity break,2,SPY -2.8% vs its 200-day average (downtrend); inverted term structure (9-day IV 26% > 30-day 23%),-0.013131385810908003,-0.10692185926032516
+2025-03-28,systemic/liquidity break,2,SPY -3.3% vs its 200-day average (downtrend); inverted term structure (9-day IV 21% > 30-day 19%),-0.0024115466292335963,-0.10650397725227645
+2025-04-03,systemic/liquidity break,3,SPY -6.6% vs its 200-day average (downtrend); SPY -12.4% from its 63-day high; inverted term structure (9-day IV 29% > 30-day 24%),0.049953419042295444,-0.07493944475498415
+2025-04-04,systemic/liquidity break,5,SPY -12.0% vs its 200-day average (downtrend); SPY -17.6% from its 63-day high; 20-day realized vol 32%; inverted term structure (9-day IV 48% > 30-day 38%); credit stress: HYG -2.6% over 5 days,0.10592146928435708,-0.017416086130462194
+2025-04-07,systemic/liquidity break,5,SPY -12.2% vs its 200-day average (downtrend); SPY -17.7% from its 63-day high; 20-day realized vol 31%; inverted term structure (9-day IV 53% > 30-day 37%); credit stress: HYG -3.5% over 5 days,0.11255402672588133,-0.01566279392521508
+2025-04-08,systemic/liquidity break,5,SPY -13.5% vs its 200-day average (downtrend); SPY -19.0% from its 63-day high; 20-day realized vol 31%; inverted term structure (9-day IV 59% > 30-day 41%); credit stress: HYG -3.7% over 5 days,0.138132452465356,0.0
+2025-04-10,systemic/liquidity break,4,SPY -8.6% vs its 200-day average (downtrend); SPY -14.4% from its 63-day high; 20-day realized vol 52%; inverted term structure (9-day IV 45% > 30-day 37%),0.1113462198330093,-0.02039727019711013
+2025-04-11,systemic/liquidity break,4,SPY -7.0% vs its 200-day average (downtrend); SPY -12.9% from its 63-day high; 20-day realized vol 52%; inverted term structure (9-day IV 36% > 30-day 33%),0.09907480241225608,-0.03756976439300308
+2025-04-16,systemic/liquidity break,4,SPY -8.4% vs its 200-day average (downtrend); SPY -14.2% from its 63-day high; 20-day realized vol 52%; inverted term structure (9-day IV 30% > 30-day 28%),0.13038846402617676,-0.022409922763763634
+2025-04-21,systemic/liquidity break,4,SPY -10.4% vs its 200-day average (downtrend); SPY -16.2% from its 63-day high; 20-day realized vol 53%; inverted term structure (9-day IV 33% > 30-day 30%),0.15367400949638044,0.0
+2025-05-21,unclear,1,inverted term structure (9-day IV 19% > 30-day 18%),0.02966407027416529,-0.006433791991215743
+2025-08-01,tradeable VRP dislocation,0,,0.02983658238435294,0.0
+2025-10-10,tradeable VRP dislocation,0,,0.043520872255061294,0.0
+2025-11-13,unclear,1,"dash for cash: SPY -1.7%, bonds -0.8% and gold -0.8% all down",0.012930777929885284,-0.029031010058925055
+2025-11-20,unclear,1,inverted term structure (9-day IV 23% > 30-day 22%),0.049499639863301415,0.0
+2026-01-20,unclear,1,inverted term structure (9-day IV 18% > 30-day 16%),0.010183299389002087,0.0
+2026-02-12,unclear,1,inverted term structure (9-day IV 18% > 30-day 17%),-0.01796644502179756,-0.027859732558310202
+2026-03-12,systemic/liquidity break,2,"inverted term structure (9-day IV 28% > 30-day 23%); dash for cash: SPY -1.5%, bonds -0.2% and gold -2.0% all down",0.030087379515359114,-0.05118157523346234
+2026-03-20,systemic/liquidity break,3,"SPY -1.8% vs its 200-day average (downtrend); inverted term structure (9-day IV 23% > 30-day 23%); dash for cash: SPY -1.7%, bonds -1.9% and gold -3.1% all down",0.08558829424734404,-0.025594770032533187
+2026-03-26,systemic/liquidity break,3,"SPY -2.5% vs its 200-day average (downtrend); inverted term structure (9-day IV 22% > 30-day 22%); dash for cash: SPY -1.8%, bonds -0.8% and gold -3.8% all down",0.10863600427847264,-0.02033824737633505
+2026-03-27,unclear,1,SPY -4.2% vs its 200-day average (downtrend),0.12238010377075814,-0.003343373968994978
+2026-06-05,systemic/liquidity break,2,"inverted term structure (9-day IV 20% > 30-day 19%); dash for cash: SPY -2.6%, bonds -0.5% and gold -3.7% all down",0.010643346213816018,-0.01643278421801908
+2026-06-10,systemic/liquidity break,2,"inverted term structure (9-day IV 25% > 30-day 19%); dash for cash: SPY -1.6%, bonds -0.3% and gold -4.1% all down",0.03272541802792839,0.0
+2026-07-29,unclear,1,inverted term structure (9-day IV 20% > 30-day 18%),0.05708332190935761,0.0

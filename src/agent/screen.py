@@ -14,9 +14,11 @@ import re
 
 import numpy as np
 
-from src.agent.llm import build_event_prompt, news_category, overreaction_ratio, parse_verdict
+from src.agent.llm import build_event_prompt, extract_json, news_category, norm_verdict, overreaction_ratio, parse_verdict
 
-AGENT_VERSION = "ag-v1"
+AGENT_VERSION = "ag-v1"          # default: keeps the cached v1 answers comparable (data/results/agent/agent_results.csv)
+AGENT_VERSION_V2 = "ag-v2"       # [AG-50] structured XML reasoning + strict anonymization; select with version="ag-v2"
+VERSIONS = (AGENT_VERSION, AGENT_VERSION_V2)
 
 DECISION_SPEC = """
 Market evidence (computed from prices up to the Day 0 close; numbers only):
@@ -76,11 +78,16 @@ def context_block(price, peers, earn):
 
 
 def build_agent_prompt(heads, stories, aliases, sector, industry, market_cap, abnormal, price, peers, earn,
-                       valuation_lines=None):
+                       valuation_lines=None, version=AGENT_VERSION, peer_names=(), extra_names=()):
     """
     [AG-08] LLM-03's anonymized news prompt with the market evidence and the decision added
-    returns (messages, facts) like LLM-03
+    returns (messages, facts) like LLM-03. version="ag-v2" -> build_agent_prompt_v2 (AG-50).
     """
+    if version == AGENT_VERSION_V2:
+        return build_agent_prompt_v2(heads, stories, aliases, sector, industry, market_cap, abnormal, price, peers,
+                                     earn, valuation_lines, peer_names, extra_names)
+    if version != AGENT_VERSION:
+        raise ValueError(f"unknown agent version {version}; one of {VERSIONS}")
     msgs, facts = build_event_prompt(heads, stories, aliases, sector, industry, market_cap, abnormal)
     user = msgs[1]["content"]
     i = user.rfind("Return JSON:")
@@ -92,17 +99,19 @@ def build_agent_prompt(heads, stories, aliases, sector, industry, market_cap, ab
     return msgs, facts
 
 
-def parse_agent(content):
-    """[AG-09] LLM-05 plus decision / market_read / key_risk; anything malformed -> decision "skip" """
+def parse_agent(content, version=AGENT_VERSION, market_cap=None):
+    """[AG-09] LLM-05 plus decision / market_read / key_risk; anything malformed -> decision "skip".
+    [AG-47] JSON found with extract_json (fences, text around it, truncation); content None (LLM unavailable)
+    -> verdict "unavailable", decision "skip". version="ag-v2" -> parse_agent_v2."""
+    if version == AGENT_VERSION_V2:
+        return parse_agent_v2(content, market_cap)
     v = parse_verdict(content)
     extra = {"decision": "skip", "market_read": "", "key_risk": ""}
-    try:
-        d = json.loads(re.sub(r"^```(json)?|```$", "", content.strip()).strip())
-        dec = str(d.get("decision", "skip")).strip().lower()
+    d = extract_json(content) if content is not None else None
+    if d is not None:
+        dec = re.sub(r"[^a-z]", "", str(d.get("decision", "skip")).lower())
         extra = {"decision": dec if dec in ("take", "skip") else "skip",
                  "market_read": str(d.get("market_read", "")), "key_risk": str(d.get("key_risk", ""))}
-    except (ValueError, TypeError, AttributeError):
-        pass
     return {**v, **extra}
 
 
@@ -123,6 +132,136 @@ def final_call(parsed, abnormal, market_cap, earn, threshold=3.0, fv_fail=None):
               (f"category {cat} not traded", tradeable),
               ("earnings inside trade window", not (earn and earn["next_in_window"])),
               (f"fair-value gate: {fv_fail}", not fv_fail)]       # AG-15, only when the veto is switched on
+    if parsed.get("verdict") == "unavailable":                  # AG-46: endpoint down -> never a TAKE, say why
+        checks.insert(0, ("LLM unavailable", False))
     failed = [why for why, ok in checks if not ok]
     return {"agent_take": not failed, "category": cat, "tradeable": tradeable, "ratio_mid": ratio,
             "ratio_ok": bool(ratio is not None and ratio >= threshold), "why_not": "; ".join(failed)}
+
+
+# ---------------------------------------------------------------- [AG-50] agent v2: structured reasoning
+DECISION_SPEC_V2 = """
+Market evidence (computed from prices up to the Day 0 close; numbers only):
+{context}
+
+Volatility context:
+{vol}
+
+Your job is to decide whether to SELL A PUT SPREAD with the short strike well below the Day 0 low, held 2-5 weeks.
+That trade wins if the stock does not keep falling. Selling puts on random days does about as well as selling after
+drops, so only say "take" when the drop is clearly bigger than the news justifies AND the selling is likely done.
+Most drops are NOT clear overreactions: "take" should be the minority answer.
+
+Reason in four short steps, each inside its tag (at most three sentences per tag):
+<impairment>Does the news permanently reduce future cash flows? Say none, minor, material or severe, and why.</impairment>
+<shock_type>Exogenous (macro, sector, analyst or rating action, peer contagion, one-off event) or endogenous (the
+company's own guidance, accounting, liquidity, management, competitive position)? Say which and why.</shock_type>
+<vol_context>Is the Day 0 move large for this stock's normal volatility, and is volatility likely to stay high?</vol_context>
+<overreaction>Estimate the hit to company value as % of market value (low / mid / high) and compare it with the drop.
+Give a calibrated confidence: 0.5 = coin flip; 0.8 or more only when the evidence is strong and consistent.</overreaction>
+
+Then give the final answer as JSON inside <answer></answer>:
+<answer>{{"category": one of ["analyst downgrade", "peer/sector contagion", "lawsuit", "regulatory probe",
+  "short seller report", "product recall", "dilution/offering", "guidance cut", "management change",
+  "M&A", "fraud/accounting", "macro/other", "unclear"],
+ "impairment": "none" | "minor" | "material" | "severe",
+ "shock_type": "exogenous" | "endogenous" | "mixed",
+ "est_impact_pct": {{"low": number, "mid": number, "high": number}},
+ "verdict": "justified" | "not justified" | "unsure",
+ "market_read": "one sentence", "decision": "take" | "skip", "key_risk": "one sentence",
+ "reason": "at most two sentences", "confidence": number between 0 and 1}}</answer>"""
+
+SECTIONS = ("impairment", "shock_type", "vol_context", "overreaction")
+
+
+def vol_lines(price, extra=None):
+    """[AG-50] the move in standard deviations of the stock's own prior 60-day volatility, plus any extra lines"""
+    out = []
+    if price and price.get("rv_60d") and np.isfinite(price["rv_60d"]) and price["rv_60d"] > 0:
+        daily = price["rv_60d"] / np.sqrt(252)
+        out.append(f"- Day 0 move: {price['ret_shock'] * 100:+.1f}% = {price['ret_shock'] / daily:+.1f} daily "
+                   f"standard deviations of the prior 60 days (annualized vol {price['rv_60d'] * 100:.0f}%)")
+    else:
+        out.append("- Prior volatility: not available")
+    out.append("- Option-implied volatility for this stock: not available (not in the evidence)")
+    return "\n".join(out + list(extra or []))
+
+
+def build_agent_prompt_v2(heads, stories, aliases, sector, industry, market_cap, abnormal, price, peers, earn,
+                          valuation_lines=None, peer_names=(), extra_names=(), vol_extra=None):
+    """
+    [AG-50] v2 prompt: strict anonymization (AG-48: case-safe tickers, peer and executive names, $ buckets,
+    size band instead of $B), the same market evidence block (AG-07), a volatility block, and the four
+    structured reasoning sections (<impairment>, <shock_type>, <vol_context>, <overreaction>) before a JSON
+    <answer>. Call the LLM with llm_kwargs("ag-v2") (plain text, not JSON mode). returns (messages, facts)
+    """
+    msgs, facts = build_event_prompt(heads, stories, aliases, sector, industry, market_cap, abnormal, strict=True,
+                                     peer_names=peer_names, extra_names=extra_names)
+    user = msgs[1]["content"]
+    i = user.rfind("Return JSON:")
+    body = user[:i].rstrip() if i >= 0 else user.rstrip()
+    ctx = context_block(price, peers, earn)
+    if valuation_lines:
+        ctx += "\n" + "\n".join(valuation_lines)
+    msgs[1] = {"role": "user", "content": body + "\n" + DECISION_SPEC_V2.format(context=ctx, vol=vol_lines(price, vol_extra))}
+    msgs[0] = {"role": "system", "content": msgs[0]["content"].replace(
+        "Answer in JSON only, with exactly the keys requested.",
+        "Write the four tagged reasoning sections, then the JSON answer inside <answer></answer>.")}
+    return msgs, {**facts, "version": AGENT_VERSION_V2}
+
+
+def llm_kwargs(version=AGENT_VERSION):
+    """[AG-50] call_llm settings per version: v2 answers in tagged text + JSON, so JSON mode is off"""
+    return {"max_tokens": 900} if version == AGENT_VERSION else {"max_tokens": 1500, "json_mode": False}
+
+
+def parse_agent_v2(content, market_cap=None):
+    """
+    [AG-50] parse a v2 answer. Tolerant: any section may be missing (sections_found lists the ones present), the
+    JSON may sit outside <answer> or be cut off; est_impact_pct (% of market value) -> impact_low/mid/high in $
+    when market_cap is known (so the overreaction ratio works as in v1); est_impact_usd is accepted too.
+    Malformed -> parse_ok False, decision skip. content None -> verdict "unavailable".
+    """
+    out = {"category": "unclear", "impact_low": np.nan, "impact_mid": np.nan, "impact_high": np.nan,
+           "verdict": "unsure", "reason": "", "impact_basis": "", "confidence": np.nan, "parse_ok": False,
+           "decision": "skip", "market_read": "", "key_risk": "", "impairment": "", "shock_type": "",
+           "sections_found": [], "version": AGENT_VERSION_V2}
+    if content is None:
+        return {**out, "verdict": "unavailable", "reason": "LLM unavailable"}
+    for sec in SECTIONS:
+        m = re.search(rf"<{sec}>(.*?)(</{sec}>|<(?:{'|'.join(SECTIONS)}|answer)>|$)", content, flags=re.S | re.I)
+        if m and m.group(1).strip():
+            out[f"text_{sec}"] = m.group(1).strip()[:600]
+            out["sections_found"].append(sec)
+    d = extract_json(content)
+    if d is None:
+        return out
+    v = norm_verdict(d.get("verdict", "unsure"))
+
+    def num(x):
+        try:
+            f = float(x)
+            return f if np.isfinite(f) else np.nan
+        except (TypeError, ValueError):
+            return np.nan
+    pct = d.get("est_impact_pct")
+    usd = d.get("est_impact_usd")
+    if isinstance(pct, dict) and market_cap and np.isfinite(market_cap):
+        for k in ("low", "mid", "high"):
+            out[f"impact_{k}"] = num(pct.get(k)) / 100 * market_cap
+        out["impact_basis"] = f"est_impact_pct {pct}"
+    elif isinstance(usd, dict):
+        for k in ("low", "mid", "high"):
+            out[f"impact_{k}"] = num(usd.get(k))
+    dec = re.sub(r"[^a-z]", "", str(d.get("decision", "skip")).lower())
+    imp = str(d.get("impairment", "")).strip().lower()
+    st = str(d.get("shock_type", "")).strip().lower()
+    out.update({"category": str(d.get("category", "unclear")),
+                "verdict": v if v in ("justified", "not justified", "unsure") else "unsure",
+                "reason": str(d.get("reason", "")), "confidence": num(d.get("confidence")),
+                "decision": dec if dec in ("take", "skip") else "skip",
+                "market_read": str(d.get("market_read", "")), "key_risk": str(d.get("key_risk", "")),
+                "impairment": imp if imp in ("none", "minor", "material", "severe") else "",
+                "shock_type": st if st in ("exogenous", "endogenous", "mixed") else "",
+                "parse_ok": v in ("justified", "not justified", "unsure")})
+    return out

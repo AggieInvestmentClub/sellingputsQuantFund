@@ -1,0 +1,18 @@
+AGENT ABLATION (pre-reg strategy/preregistered_agent_ablation.md sha256 b0cf3c86e503460b) - post-cutoff shocks only, cached ag-v1 verdicts
+universe 903 priced trades (645 in-sample, 258 hold-out from 2026-06-01); TAKEs 63, with fundamentals 875
+
+H1: take & fv_pass  vs  take & ~fv_pass
+  in-sample: n= 12 -0.37% [-20.69%, +14.01%]  vs complement n=31 +0.63%; diff -0.99% [-25.13%, +18.68%]
+  hold-out:  n=  4 +13.05% [+7.07%, +19.04%]  vs complement n=14 +3.60%; diff +9.45% [-3.69%, +33.88%]
+  deflated Sharpe (10 trials) 0.618   VERDICT: FAIL
+
+H2: take & confidence>=0.7  vs  rest
+  in-sample: n= 45 +0.96% [-7.16%, +8.08%]  vs complement n=600 +1.48%; diff -0.52% [-8.08%, +6.19%]
+  hold-out:  n= 18 +5.70% [-10.70%, +13.50%]  vs complement n=240 -0.74%; diff +6.44% [-10.27%, +17.19%]
+  deflated Sharpe (10 trials) 0.667   VERDICT: FAIL
+
+H3: take & fv_pass  vs  rest
+  in-sample: n= 12 -0.37% [-20.69%, +14.01%]  vs complement n=633 +1.48%; diff -1.85% [-22.53%, +12.80%]
+  hold-out:  n=  4 +13.05% [+7.07%, +19.04%]  vs complement n=254 -0.50%; diff +13.55% [+6.58%, +20.67%]
+  deflated Sharpe (10 trials) 0.618   VERDICT: FAIL
+
