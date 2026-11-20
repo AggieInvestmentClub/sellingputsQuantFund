@@ -1,0 +1,59 @@
+year,root,ric,rows,note,bid_ask
+1998,SPX,,0,no .SPX level,
+1998,SPY,SPYO209808800.U^C98,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+1998,SPY,SPYO209809300.U^C98,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+1998,SPY,SPYO209809800.U^C98,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2002,SPX,,0,no .SPX level,
+2002,SPY,SPYO150209500.U^C02,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2002,SPY,SPYO150210100.U^C02,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2002,SPY,SPYO150210700.U^C02,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2005,SPX,,0,no .SPX level,
+2005,SPY,SPYO180510300.U^C05,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2005,SPY,SPYO180510900.U^C05,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2005,SPY,SPYO180511500.U^C05,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2008,SPX,,0,no .SPX level,
+2008,SPY,SPYO210811600.U^C08,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2008,SPY,SPYO210812200.U^C08,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2008,SPY,SPYO210812900.U^C08,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2010,SPX,,0,no .SPX level,
+2010,SPY,SPYO191009400.U^C10,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2010,SPY,SPYO191009900.U^C10,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2010,SPY,SPYO191010500.U^C10,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2013,SPX,,0,no .SPX level,
+2013,SPY,SPYO151312900.U^C13,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2013,SPY,SPYO151313700.U^C13,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2013,SPY,SPYO151314500.U^C13,0,"No data to return, please check errors: ERROR: No successful response.
+(TS.Inter",False
+2016,SPX,,0,no .SPX level,
+2016,SPY,SPYO181616400.U^C16,29,,True
+2016,SPY,SPYO181617400.U^C16,29,,True
+2016,SPY,SPYO181618300.U^C16,29,,True
+2019,SPX,,0,no .SPX level,
+2019,SPY,SPYO151923400.U^C19,29,,True
+2019,SPY,SPYO151924700.U^C19,29,,True
+2019,SPY,SPYO151926100.U^C19,29,,True
+2022,SPX,,0,no .SPX level,
+2022,SPY,SPYO182238000.U^C22,29,,True
+2022,SPY,SPYO182240200.U^C22,29,,True
+2022,SPY,SPYO182242400.U^C22,29,,True
+2024,SPX,,0,no .SPX level,
+2024,SPY,SPYO152442400.U^C24,29,,True
+2024,SPY,SPYO152444900.U^C24,29,,True
+2024,SPY,SPYO152447400.U^C24,29,,True

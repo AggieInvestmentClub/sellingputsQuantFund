@@ -1,0 +1,21 @@
+pre-registration strategy/preregistered_simulated_1990_2009.md sha256 70eb8c9dc193168d (SIMULATED prices: evidence, not proof)
+SPX: 10 x unadjusted SPY (addendum), from 1993-01-29
+model fitted on 3367 days / 95,069 real quotes: ATM IV / VIX by regime {0: 0.78, 1: 0.826, 2: 0.853}
+
+STEP 1 calibration check (2010-2023, MA-only guard, monthly expiries): real 58 trades mean -1.54% | simulated 63 mean -2.73% | gap -1.19% | Spearman 0.42 on 58 common dates | sim/real credit 0.93 -> MODEL NOT VALIDATED
+
+STEP 2 simulated 1990-2009: 3120 tradable days, 96 signals, 59 trades, 0 full losses (worst +1%)
+  PASS  1. mean ror > 0 with 95% interval above 0: +2.25% [+2.09%, +2.41%], n=59
+  PASS  2. >= 70% of years with trades positive: 11/11
+  PASS  3. worst month better than -25%: +0.1%
+  PASS  4. max drawdown better than -30%: +0.0%
+  account at 10% risk: +13.3% over 20 years, max DD +0.0%; yearly 1996: +0.7%, 1997: +2.3%, 1998: +1.1%, 1999: +2.4%, 2000: +2.3%, 2002: +0.3%, 2003: +0.7%, 2004: +0.5%, 2006: +0.6%, 2007: +1.4%, 2009: +1.1%
+  crash window 1997-10: 2 trades, sum ror +5%
+  crash window 1998-08..10: 1 trades, sum ror +3%
+  crash window 2000-2002: 7 trades, sum ror +19%
+  crash window 2007-08: 2 trades, sum ror +6%
+  crash window 2008-09..2009-03: 0 trades, sum ror +0%
+  permutation null all_days: 857/10000 >= real -> p = 0.0858 (real CAGR +0.751%, permuted median +0.217%)
+  permutation null guard_days: 701/10000 >= real -> p = 0.0702 (real CAGR +0.751%, permuted median +0.643%)
+
+VERDICT (simulated, evidence only): FAIL (model not validated in step 1)

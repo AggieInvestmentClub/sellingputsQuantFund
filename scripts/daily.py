@@ -63,6 +63,7 @@ def main():
     # so the index step is now the tested index-branch signal (strategy/preregistered_index_branch.md).
     run(["scripts/index_signal.py", "--capital", str(a.capital)])
     try:   # [AG-54] macro regime, information only (prototype; not a trading rule)
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # repo root, so src/ imports work
         from src.agent import macro as M
         px = M.load_closes()
         d = px.index[-1]
